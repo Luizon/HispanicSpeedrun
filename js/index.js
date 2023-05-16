@@ -6,21 +6,23 @@ var runnersDiv = null;
 function crearTarjetas() {
 	runnersArray.push(new RunBar({
 		nombre: "Mr. Bean",
+		parentNode: runnersDiv,
 	}));
 	runnersArray.push(new RunBar({
 		nombre: "Goku",
+		parentNode: runnersDiv,
 	}));
 	runnersArray.push(new RunBar({
 		nombre: "Chavelo",
+		parentNode: runnersDiv,
 	}));
 	
-	runnersArray.forEach( (runBar, i) => {
-		let nodoRunBar = document.createElement("div");
-		nodoRunBar.className = "text-center col p-4";
-		nodoRunBar.innerHTML = runBar.innerHTML;
+	// runnersArray.forEach( (runBar, i) => {
+	// 	let nodoRunBar = document.createElement("div");
+	// 	nodoRunBar.innerHTML = runBar.innerHTML;
 		
-		runnersDiv.appendChild(nodoRunBar);
-	});
+	// 	runnersDiv.appendChild(nodoRunBar);
+	// });
 }
 
 window.onload = function() {

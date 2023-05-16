@@ -1,2 +1,2 @@
 // counters
-var objCounter = 1;
+var objCounter = 0;

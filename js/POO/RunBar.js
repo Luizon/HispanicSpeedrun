@@ -2,7 +2,7 @@ import { HTML_POJO } from "./HTML_POJO.js";
 
 export class RunBar extends HTML_POJO {
 	constructor(json) {
-		super();
+		super(json);
 		this.nombre = json.nombre || "Sin nombre";
 		this.imagen = json.imagen || "";
 		this.url = json.url || "https://luizon.github.io/";
@@ -11,8 +11,9 @@ export class RunBar extends HTML_POJO {
 		this.getFecha(json.nombre);
 		this.descripcion = json.descripcion || "Sin descripción.";
 		
-		this.generarHTML();
-		this.actualizaHTML();
+		this.generarInnerHTML();
+		this.insertaNodo();
+		// this.actualizaHTML();
 	}
 
 	getFecha(nombre) {
@@ -32,18 +33,17 @@ export class RunBar extends HTML_POJO {
 
 	async actualizaHTML() {
 		// while(this.fechaActualizacion == 'Cargando') {
-			console.log(`Tarjeta ${this.id}: ${this.fechaActualizacion}`);
+			// console.log(`RunBar ${this.id}: ${this.fechaActualizacion}`);
 			// await this.sleep(1000);
 		// }
-		this.generarHTML();
-		let thisRunBar = document.getElementById(this.id);
-		// console.log(thisRunBar);
-		thisRunBar.innerHTML = "a";
+		this.innerHTML = this.generarInnerHTML();
+		let thisRunBar = $(`#${this.id}`);
+		thisRunBar.html(this.innerHTML);
+		// console.log(thisRunBar[0]);
+		// console.log(this.innerHTML);
 	}
 	
-	generarHTML() {
-		return this.div("", 
-            this.p(`Texto de pana de ${this.id}.`)
-        );
+	generarInnerHTML() {
+		this.innerHTML = this.p(`Texto de pana de ${this.id}.`);
 	}
 }
