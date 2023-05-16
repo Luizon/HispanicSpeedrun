@@ -1,6 +1,6 @@
 import { HTML_POJO } from "./HTML_POJO.js";
 
-class RunBar extends HTML_POJO {
+export class RunBar extends HTML_POJO {
 	constructor(json) {
 		super();
 		this.nombre = json.nombre || "Sin nombre";
