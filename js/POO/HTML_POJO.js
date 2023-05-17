@@ -9,24 +9,24 @@ export class HTML_POJO {
 	    return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
-    async actualizaHTML() {
+    async updateHTML() {
 
     }
 
-    insertaNodo(json = {nodoPadre : this.parentNode}) {
-        let nuevoNodo = document.createElement("div");
-        nuevoNodo.id = this.id;
-        nuevoNodo.innerHTML = this.innerHTML;
-		json.nodoPadre.appendChild(nuevoNodo);
+    insertNode(json = {parentNode : this.parentNode}) {
+        let newNode = document.createElement("div");
+        newNode.id = this.id;
+        newNode.innerHTML = this.innerHTML;
+		json.parentNode.appendChild(newNode);
     }
 
     generarInnerHTML() {
-        this.innerHTML = this.p("Este método debe ser sobreescrito en la clase que lo herede."
+        this.innerHTML = this.p("Este método debe ser sobreescrito en la class_ que lo herede."
                 + "<br>No se supone que seas capaz de ver esto en la página.");
     }
 
-    div(json = {clase:'', innerHTML:''}) {
-        let div = "<div class=\"" + json.clase + '"';
+    div(json = {class_:'', innerHTML:''}) {
+        let div = "<div class=\"" + json.class_ + '"';
         if(json.id != undefined)
             div+= ` id="${json.id}"`
         else
@@ -34,15 +34,15 @@ export class HTML_POJO {
         return div + "\">" + json.innerHTML + "</div>";
     }
     
-    a(url, innerHTML) {
-        return "<a href=\"" + url + "\">" + innerHTML + "</a>";
+    a(json) {
+        return "<a href=\"" + json.url + "\">" + json.innerHTML + "</a>";
     }
     
-    img(src, alt = "Sin imagen") {
-        return "<img src=\"" + src + "\" alt=\"" + alt + "\"/>";
+    img(json = {src : '#', alt : "Sin imagen"}) {
+        return "<img src=\"" + json.src + "\" alt=\"" + json.alt + "\"/>";
     }
     
-    p(innerHTML) {
-        return "<p>" + innerHTML + "</p>";
+    p(json) {
+        return "<p>" + json.innerHTML + "</p>";
     }
 }
