@@ -1,4 +1,4 @@
-# [HispanicSpeedrun](https://speedruñ.com)
+# [SpeedruÑ.com](https://speedruñ.com)
 
 Esta página no es oficial y no está asociada con Speedrun.com
 
