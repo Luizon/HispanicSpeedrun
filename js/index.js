@@ -5,18 +5,6 @@ var runnersArray = [];
 var runsDiv = null, runsDivLoading = null;
 
 async function createRunBars() {
-	// runnersArray.push(new RunBar({
-	// 	name: "Mr. Bean",
-	// 	parentNode: runsDiv,
-	// }));
-	// runnersArray.push(new RunBar({
-	// 	name: "Goku",
-	// 	parentNode: runsDiv,
-	// }));
-	// runnersArray.push(new RunBar({
-	// 	name: "Chavelo",
-	// 	parentNode: runsDiv,
-	// }));
 	let newRunsDivInnerHTML = document.createElement("div");//
 	let apiURL = `${SPEEDRUN_API}/leaderboards/smo/category/any`;
 	apiURL+= "?embed=players,game"; // info extra para mostrar
@@ -36,7 +24,7 @@ async function createRunBars() {
 				return false;
 			let runnerName = players.data[i].names.international;
 			runnersCountry = HISPANIC_COUNTRYS[runnersCountry.toLowerCase()]; // traduce pais a español
-			let name = `(Ñ: ${hPosition++} Global: ${run.place}) - ${runnerName} [${run.run.date}] (${formatTime(run.run.times.primary_t)}) de ${runnersCountry}`;
+			let name = `(Ñ: ${hPosition++} Global: ${run.place}) - ${runnerName} de ${runnersCountry}<br>[${run.run.date}] (${formatTime(run.run.times.primary_t)})`;
 			runnersArray.push(new RunBar({
 				name: name,
 				parentNode: newRunsDivInnerHTML,
