@@ -17,15 +17,16 @@ async function createRunBars() {
 	// 	name: "Chavelo",
 	// 	parentNode: runsDiv,
 	// }));
-	let newRunsDivInnerHTML = document.createElement("div");
-	await $.get(`${speedrunAPI}/leaderboards/76r55vd8/category/w20w1lzd?top=10`, (runsAnswer) => {
+	let newRunsDivInnerHTML = document.createElement("div");//
+	let apiURL = `${speedrunAPI}/leaderboards/smo/category/any?top=100`;
+	apiURL+= "&embed=players,game"; // info extra para mostrar
+	apiURL+= "&var-68km3w4l=zqoyz021"; // any 1P
+	await $.get(apiURL, (runsAnswer) => {
+		console.log(runsAnswer)
 		let runs = runsAnswer.data.runs;
-		console.log(runs)
-		runs.forEach(async run => {
-			let runnerName = "sinNombre";
-			await $.get(`${speedrunAPI}/users/${run.run.players[0].id}`, runnerAnswer => {
-				runnerName = runnerAnswer.data.names.international;
-			});
+		let players = runsAnswer.data.players;
+		runs.forEach(async (run, i) => {
+			let runnerName = players.data[i].names.international;
 			let name = `${run.place} - ${runnerName} [${run.run.date}] (${formatTime(run.run.times.primary_t)})`;
 			runnersArray.push(new RunBar({
 				name: name,
