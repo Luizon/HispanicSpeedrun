@@ -1,6 +1,9 @@
+* {
+    color: cornsilk;
+}
+
 body {
     background: #420666;
-    color: aliceblue;
     padding: 0px;
     margin: 0px;
     text-align: center;
@@ -8,10 +11,13 @@ body {
 }
 
 footer {
-    color: aliceblue;
     background: #212529;
-    height: 6em;
+    height: 7em;
     position: sticky;
     width: 100%;
     top: 100vh;
+}
+
+a:hover {
+    color: #a200ff
 }

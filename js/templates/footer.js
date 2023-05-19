@@ -1,7 +1,7 @@
 let footerNode = document.createElement('footer');
 footerNode.classList = "text-center";
 footerNode.innerHTML = 
-`<div class="mt-2">
+`<div class="pt-3">
     <span>SpeedruÑ.com - 2023</span>
     <div style="height: 40px;">
         <p class="text-white-50 lh-1">
@@ -12,4 +12,4 @@ footerNode.innerHTML =
         Ñ
     </p>
 </div>`;
-$("body").append(footerNode);
+document.querySelector("body").appendChild(footerNode);

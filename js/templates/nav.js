@@ -25,8 +25,8 @@ navbarNode.innerHTML =
       </span>
     </div>
   </div>`;
-$("body").append(navbarNode);
+document.querySelector("body").appendChild(navbarNode);
 
 let divMargin = document.createElement('div');
 divMargin.style = "margin-bottom: 4em;";
-$("body").append(divMargin);
+document.querySelector("body").appendChild(divMargin);
