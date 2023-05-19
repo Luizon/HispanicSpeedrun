@@ -1,1 +1,1 @@
-const hostname = "https://speedruñ.com";
+const hostname = "http://localhost:64/HispanicSpeedrun";

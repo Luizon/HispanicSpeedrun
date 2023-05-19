@@ -29,3 +29,8 @@ const HISPANIC_COUNTRYS = {
     'uruguay' : 'Uruguay',
     'venezuela' : 'Venezuela',
 }
+const LINKS = {
+    'ñ_smo' : `${hostname}/leaderboard/smo`,
+    'ñ_sm64' : `${hostname}/leaderboard/sm64`,
+    'ñ_index' : `${hostname}`,
+}
