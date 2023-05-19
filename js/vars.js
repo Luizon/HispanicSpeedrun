@@ -1,0 +1,1 @@
+const hostname = "https://speedruñ.com";
