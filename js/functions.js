@@ -6,36 +6,29 @@ export function formatTime(totalSeconds) {
 
     if(hours >= 1) {
         hours+= "h ";
-        minutes = setMinutes(minutes);
-        seconds = setSeconds(seconds);
-        milliseconds = setMilliseconds(milliseconds);
+        minutes = formatMinutes(minutes);
+        seconds = formatSeconds(seconds);
+        milliseconds = formatMilliseconds(milliseconds);
     }
     else {
         hours = "";
-        if(minutes >= 1)
-            minutes+= "m ";
-        else
-            minutes = "";
-        seconds = setSeconds(seconds);
-        milliseconds = setMilliseconds(milliseconds);
+        seconds = formatSeconds(seconds);
+        minutes = formatMinutes(minutes);
+        milliseconds = formatMilliseconds(milliseconds);
     }
     
     return hours + minutes + seconds + milliseconds;;
 }
 
-function setMinutes(minutes) {
-    if(minutes == 0)
-        return "";
-    return minutes + "m ";
+function formatMinutes(minutes) {
+    return (minutes >= 10 ? minutes : '0' + minutes) + "m ";
 }
 
-function setSeconds(seconds) {
-    if(seconds == 0)
-        return "";
-    return seconds + "s";
+function formatSeconds(seconds) {
+    return (seconds >= 10 ? seconds : '0' + seconds) + "s";
 }
 
-function setMilliseconds(milliseconds) {
+function formatMilliseconds(milliseconds) {
     if(milliseconds == 0)
         return "";
     return ` ${Math.round(milliseconds*1000)}ms`;
