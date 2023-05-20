@@ -2,22 +2,22 @@ export class HTML_POJO {
     constructor(json) {
         this.id = `obj${++objCounter}`;
         this.innerHTML = json.innerHTML || "";
+        this.class_ = json.class_ || '';
         this.parentNode = json.parentNode || null; // sin padre por defecto
+        this.node = document.createElement("div");
     }
 
     sleep(ms) {
 	    return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
-    async updateHTML() {
+    async updateHTML() { }
 
-    }
-
-    insertNode(json = {parentNode : this.parentNode}) {
-        let newNode = document.createElement("div");
-        newNode.id = this.id;
-        newNode.innerHTML = this.innerHTML;
-		json.parentNode.appendChild(newNode);
+    insertNode() {
+        this.node.id = this.id;
+        this.node.innerHTML = this.innerHTML;
+		this.node.classList.add(this.class_);
+		this.parentNode.appendChild(this.node);
     }
 
     generarInnerHTML() {
@@ -26,23 +26,23 @@ export class HTML_POJO {
     }
 
     div(json = {class_:'', innerHTML:''}) {
-        let div = "<div class=\"" + json.class_ + '"';
+        let div = `<div class="${json.class_}"`;
         if(json.id != undefined)
             div+= ` id="${json.id}"`
-        else
-            console.log(json)
-        return div + "\">" + json.innerHTML + "</div>";
+        return div + `>${json.innerHTML}</div>`;
     }
     
     a(json) {
-        return "<a href=\"" + json.url + "\">" + json.innerHTML + "</a>";
+        let class_ = json.class_ || '';
+        let title = json.title || '';
+        return `<a title="${title}" class="${class_}" href="${json.url}">${json.innerHTML}</a>`;
     }
     
     img(json = {src : '#', alt : "Sin imagen"}) {
-        return "<img src=\"" + json.src + "\" alt=\"" + json.alt + "\"/>";
+        return `<img src="${json.src}" alt="${json.alt}"/>`;
     }
     
     p(json) {
-        return "<p>" + json.innerHTML + "</p>";
+        return `<p>${json.innerHTML}</p>`;
     }
 }

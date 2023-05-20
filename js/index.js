@@ -25,14 +25,22 @@ async function createRunBars() {
 					return false;
 				let runnerName = players.data[i].names.international;
 				runnersCountry = HISPANIC_COUNTRYS[runnersCountry.toLowerCase()]; // traduce pais a español
-				let name = `(Ñ: ${hPosition++} Global: ${run.place}) - ${runnerName} de ${runnersCountry}<br>[${run.run.date}] (${formatTime(run.run.times.primary_t)})`;
+				// let name = `(Ñ: ${} Global: ${}) - ${runnerName} de ${}<br>[${}] (${})`;
 				runnersArray.push(new RunBar({
-					name: name,
-					parentNode: newRunsDivInnerHTML,
+					hPosition : hPosition++,
+					globalPosition : run.place,
+					country : runnersCountry,
+					player : runnerName,
+					url : run.run.weblink,
+					comment : run.run.comment,
+					time : formatTime(run.run.times.primary_t),
+					date : run.run.date,
+					parentNode: runsDiv,
+					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				}));
 			});
 			runsDiv.removeChild(runsDivLoading);
-			runsDiv.appendChild(newRunsDivInnerHTML);
+			// runsDiv.appendChild(newRunsDivInnerHTML);
 		})
 		.fail(err => {
 			console.log('error al cargar la leaderboard');
@@ -42,7 +50,7 @@ async function createRunBars() {
 }
 
 window.onload = function() {
-	runsDiv = document.getElementById("divTest");
-	runsDivLoading = document.getElementById("divTestLoading");
+	runsDiv = document.getElementById("divRunBars");
+	runsDivLoading = document.getElementById("divRunBarsLoading");
 	createRunBars();
 }

@@ -21,3 +21,44 @@ footer {
 a:hover {
     color: #a200ff
 }
+
+.run-bar-container {
+    background: #fff4;
+    margin-bottom: 2em;
+}
+
+.run-bar {
+    width: 100%;
+    text-align: center;
+    margin-left: 0px;
+    font-size: .85em;
+}
+
+.run-bar-position {
+    min-width: 34px;
+    max-width: 40px;
+}
+
+.run-bar-country {
+    min-width: 100px;
+}
+
+.run-bar-runner{
+    font-weight: bold;
+}
+
+.run-bar-header {
+    font-weight: bolder;
+}
+
+.run-bar-time, .run-bar-date {
+    min-width: 120px;
+    max-width: 150px;
+}
+
+.row-even {
+    background: #fff2;
+}
+.row-odd {
+    background: #fff0;
+}
