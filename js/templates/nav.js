@@ -2,7 +2,7 @@ let navbarNode = document.createElement('nav');
 navbarNode.classList = "navbar navbar-expand-lg navbar-dark bg-dark fixed-top";
 navbarNode.innerHTML = 
 `<div class="container-fluid">
-    <div class="justify-content-center text-center" style="position: absolute; width: 100%; top: .5em; z-index: -1;">
+    <div class="justify-content-center text-center" style="position: absolute; width: 100%; right: 0px; z-index: -1;">
       <span class="pt-0 pb-0 navbar-text disabled d-md-block d-lg-none fw-bolder fs-3 font-monospace">
         Ñ
       </span>
