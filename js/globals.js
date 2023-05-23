@@ -3,6 +3,8 @@ var objCounter = 0;
 
 // constants
 const SPEEDRUN_API = "https://www.speedrun.com/api/v1";
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
 
 // arrays
 const HISPANIC_COUNTRYS = {
@@ -21,7 +23,7 @@ const HISPANIC_COUNTRYS = {
     'honduras' : 'Honduras',
     'mexico' : 'México',
     'nicaragua' : 'Nicaragua',
-    'panama' : 'Panama',
+    'panama' : 'Panamá',
     'paraguay' : 'Paraguay',
     'peru' : 'Perú',
     'puerto rico' : 'Puerto Rico',
@@ -30,7 +32,7 @@ const HISPANIC_COUNTRYS = {
     'venezuela' : 'Venezuela',
 }
 const LINKS = {
-    'ñ_smo' : `${hostname}/leaderboard/smo`,
-    'ñ_sm64' : `${hostname}/leaderboard/sm64`,
+    'ñ_smo' : `${hostname}/leaderboard?juego=smo`,
+    'ñ_sm64' : `${hostname}/leaderboard?juego=sm64`,
     'ñ_index' : `${hostname}`,
 }

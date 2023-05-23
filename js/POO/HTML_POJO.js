@@ -16,7 +16,9 @@ export class HTML_POJO {
     insertNode() {
         this.node.id = this.id;
         this.node.innerHTML = this.innerHTML;
-		this.node.classList.add(this.class_);
+        this.class_.split(" ").forEach(addedClass => {
+		    this.node.classList.add(addedClass);
+        });
 		this.parentNode.appendChild(this.node);
     }
 

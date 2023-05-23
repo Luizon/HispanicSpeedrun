@@ -5,7 +5,7 @@ footerNode.innerHTML =
     <span>SpeedruÑ.com - 2023</span>
     <div style="height: 40px;">
         <p class="text-white-50 lh-1">
-            Toda la información mostrada en esta página le pertenece a speedrun.com.
+            Toda la información mostrada en esta página es propiedad de speedrun.com.
         </p>
     </div>
     <p class="text-white-50 lh-1">
