@@ -63,3 +63,16 @@ a:hover {
 .row-odd {
     background: #fff0;
 }
+
+.category-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.category-list li {
+    display: inline-block;
+}
+
+.category-list li a:hover {
+    background-color: #665172;
+}

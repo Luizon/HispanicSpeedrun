@@ -26,6 +26,7 @@ async function loadCategories(json) {
 				
 				let categoryNode = document.createElement("a");
 				categoryNode.innerHTML = iCategory.name;
+				categoryNode.classList.add("btn", "btn-dark", "me-2", "mb-2");
 				categoryNode.href = `${hostname}/leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(" ", "_").replace("%", "")}`;
 				let elmentListNode = document.createElement("li");
 				elmentListNode.appendChild(categoryNode);
@@ -39,24 +40,16 @@ async function loadCategories(json) {
 			category = categoryId;
 		})
 		.fail(err => {
-			console.log('error al cargar la leaderboard');
-			// runsDivLoading.innerText = 'Error al cargar la leaderboard, intente recargar la página.';
+			console.log('error al cargar la informacion del juego');
 			console.log(err);
+			if(err.responseJSON)
+				if(err.responseJSON.message)
+					alert(err.responseJSON.message);
 		});
 }
 
 async function createRunBars(json) {
 	let hPosition = 1;
-	runnersArray.push(new RunBar({
-		hPosition : "Ñ",
-		globalPosition : "#",
-		country : "País",
-		player : "Runner",
-		time : "Tiempo",
-		date : "Fecha",
-		parentNode: $("#runBarHeader")[0],
-		class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'} run-bar-header`,
-	}));
 	let apiURL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
 	apiURL+= "?embed=players"; // info extra para mostrar
 	if(json.var) {
@@ -98,8 +91,12 @@ async function createRunBars(json) {
 		})
 		.fail(err => {
 			console.log('error al cargar la leaderboard');
-			runsDivLoading.innerText = 'Error al cargar la leaderboard, intente recargar la página.';
+			runsDivLoading.innerText = 'Error al cargar la leaderboard, culpa de Luizón por no optimizar esto.';
 			console.log(err);
+			console.log(category)
+			if(err.responseJSON)
+				if(err.responseJSON.message)
+					alert(err.responseJSON.message);
 		});
 }
 
@@ -108,6 +105,16 @@ window.onload = async function() {
 		window.location.href = "../";
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");
+	new RunBar({
+		hPosition : "Ñ",
+		globalPosition : "#",
+		country : "País",
+		player : "Runner",
+		time : "Tiempo",
+		date : "Fecha",
+		parentNode: $("#runBarHeader")[0],
+		class_ : `odd run-bar-header`,
+	});
 	await loadCategories({ game : urlParams.get('juego') });
 	createRunBars({
 		game : gameId,
