@@ -40,8 +40,11 @@ export class HTML_POJO {
         return `<a title="${title}" class="${class_}" href="${json.url}">${json.innerHTML}</a>`;
     }
     
-    img(json = {src : '#', alt : "Sin imagen"}) {
-        return `<img src="${json.src}" alt="${json.alt}"/>`;
+    img(json) {
+        let alt = json.alt == undefined ? "Sin imagen" : json.alt;
+        let class_ = json.class_ || "";
+        json.title = json.title || '';
+        return `<img class="${class_}" src="${json.src}" title="${json.title}" alt="${alt}"/>`;
     }
     
     p(json) {

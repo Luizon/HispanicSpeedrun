@@ -25,14 +25,19 @@ a:hover {
 .run-bar-container {
     background: #fff4;
     margin-bottom: 2em;
-    min-width: 600px;
+    min-width: 400px;
 }
 
 .run-bar {
     width: 100%;
     text-align: center;
     margin-left: 0px;
-    font-size: .85em;
+    font-size: .9em;
+}
+
+.run-bar > a {
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 .run-bar-position {
@@ -46,15 +51,23 @@ a:hover {
 
 .run-bar-runner{
     font-weight: bold;
+    text-align: start;
 }
 
 .run-bar-header {
     font-weight: bolder;
 }
 
-.run-bar-time, .run-bar-date {
-    min-width: 120px;
+.run-bar-time {
+    text-align: end;
+    min-width: 140px;
     max-width: 150px;
+}
+
+.run-bar-date {
+    text-align: center;
+    min-width: 120px;
+    max-width: 130px;
 }
 
 .row-even {
@@ -75,4 +88,10 @@ a:hover {
 
 .category-list li a:hover {
     background-color: #665172;
+}
+
+.runner-flag {
+    height: 18px;
+    position: relative;
+    top: -2px;
 }

@@ -6,14 +6,22 @@ export class RunBar extends HTML_POJO {
 		this.hPosition = json.hPosition || 0;
 		this.globalPosition = json.globalPosition || 0;
 		this.country = json.country || "";
+		this.countryCode = json.countryCode || "";
 		this.player = json.player || "Sin nombre";
 		this.url = json.url || "";
 		this.comment = json.comment || "";
 		this.time = json.time || "error";
 		this.date = json.date || "error";
+		this.subcategory = json.subcategory || "null";
+		this.flag = this.img({
+			src : `https://speedrun.com/images/flags/${this.countryCode}.png`,
+			alt : '',
+			class_ : "runner-flag",
+			title : this.country,
+		});
 		this.generateInnerHTML();
 		this.insertNode();
-		// this.actualizaHTML();
+		// this.updateHTML();
 	}
 
 	async upadateHTML() {
@@ -21,8 +29,6 @@ export class RunBar extends HTML_POJO {
 		let thisRunBar = $(`#${this.id}`);
 		console.log(this.node)
 		thisRunBar.html(this.innerHTML);
-		// console.log(thisRunBar[0]);
-		// console.log(this.innerHTML);
 	}
 	
 	generateInnerHTML() {
@@ -30,10 +36,10 @@ export class RunBar extends HTML_POJO {
 		this.innerHTML = 
 				this.div({class_ : 'col run-bar-position', innerHTML : this.hPosition })
 			+ this.div({class_ : 'col run-bar-position', innerHTML : this.globalPosition })
-			+ this.div({class_ : 'col run-bar-runner', innerHTML : this.player })
-			+ this.div({class_ : 'col run-bar-country', innerHTML : this.country })
-			+ this.div({class_ : 'col run-bar-date', innerHTML : this.date })
-			+ this.div({class_ : 'col run-bar-time', innerHTML : this.time });
+			+ this.div({class_ : 'col run-bar-runner', innerHTML : (this.countryCode ? `${this.flag} ` : "") + `${this.player}` }) // si no tiene bandera, no se pondra el espacio
+			+ this.div({class_ : 'col run-bar-time', innerHTML : this.time })
+			+ ( this.subcategory ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategory}`}) : console.log("nel") ) // sin subcategoria no se pondra esta columna
+			+ this.div({class_ : 'col run-bar-date d-none d-sm-block d-md-block d-lg-block d-xl-block', innerHTML : this.date });
 		if(this.url)
 			this.innerHTML = this.a({title: this.comment, class_ : 'row m-0 p-0', url : this.url, innerHTML : this.innerHTML });
 	}
