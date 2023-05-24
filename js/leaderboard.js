@@ -8,7 +8,10 @@ var leaderboard = {
 	game : {
 		ID : null,
 	},
-	category : null,
+	category : {
+		code : null,
+		ID : null,
+	},
 	subcategory : {
 		ID : null,
 		key : null,
@@ -24,16 +27,16 @@ async function loadCategories(json) {
 			console.log(apiAnswer);
 			leaderboard.game.ID = apiAnswer.data.id;
 			let categories = [];
-			leaderboard.category = null;
-			let categoryId = null;
+			leaderboard.category.code = null;
+			leaderboard.category.ID = null;
 			apiAnswer.data.categories.data.forEach(iCategory => {
 				if(iCategory.type == "per-level")
 					return false;
 				categories.push(iCategory);
 				if(urlParams.has('categoria'))
 					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(" ", "_").replace("%", "")) {
-						leaderboard.category = iCategory.name;
-						categoryId = iCategory.id;
+						leaderboard.category.code = iCategory.name;
+						leaderboard.category.ID = iCategory.id;
 					}
 				
 				let categoryNode = document.createElement("a");
@@ -44,12 +47,11 @@ async function loadCategories(json) {
 				elmentListNode.appendChild(categoryNode);
 				$("#categories").append(elmentListNode);
 			});
-			if(leaderboard.category == null) {
-				leaderboard.category = categories[0].name;
-				categoryId = categories[0].id;
+			if(leaderboard.category.code == null) {
+				leaderboard.category.code = categories[0].name;
+				leaderboard.category.ID = categories[0].id;
 			}
-			$("#divTituloJuego").html(`${apiAnswer.data.names.international} - ${ leaderboard.category }`);
-			leaderboard.category = categoryId;
+			$("#divTituloJuego").html(`${apiAnswer.data.names.international} - ${ leaderboard.category.code }`);
 
 			createSubcategories(apiAnswer.data.variables.data);
 		})
@@ -64,22 +66,32 @@ async function loadCategories(json) {
 
 function createSubcategories(variables) {
 	variables.forEach(variable => {
-		if(variable['is-subcategory']) {
+		if(variable['is-subcategory'] && variable.scope.type.toLowerCase() == 'full-game') {
+			console.log(variable)
 			leaderboard.subcategory.key = variable.id;
+			leaderboard.subcategory.name = variable.name;
 			let subcategoryKey = Object.keys(variable.values.values)[0];
-			if(urlParams.has('subcategoria'))
-				for(let iSubcategoryKey in variable.values.values) {
-					let iSubcategoryName = variable.values.values[iSubcategoryKey].label;
+			for(let iSubcategoryKey in variable.values.values) {
+				let iSubcategoryName = variable.values.values[iSubcategoryKey].label;
+				if(urlParams.has('subcategoria'))
 					if(urlParams.get('subcategoria').toLowerCase() == iSubcategoryName.toLowerCase().replace(" ", "_").replace("%", "")) {
 						subcategoryKey = iSubcategoryKey;
 					}
-				}
+
+				let subcategoryNode = document.createElement("a");
+				subcategoryNode.innerHTML = iSubcategoryName;
+				subcategoryNode.classList.add("btn", "btn-dark", "mb-2");
+				let category = leaderboard.category.code.replace(" ", "_").replace("%", "");
+				subcategoryNode.href = `${hostname}/leaderboard?juego=${urlParams.get('juego')}&categoria=${category}&subcategoria=${iSubcategoryName}`;
+				let elmentListNode = document.createElement("li");
+				elmentListNode.appendChild(subcategoryNode);
+				$("#subcategories").append(elmentListNode);
+			}
 			variable.values.values[subcategoryKey].rules; // reglas
 
 			// terminara tomando la ultima subcategoria encontrada
 			leaderboard.subcategory.ID = subcategoryKey;
 			leaderboard.subcategory.label = variable.values.values[subcategoryKey].label;
-			leaderboard.subcategory.name = variable.name;
 		}
 	});
 
@@ -142,7 +154,7 @@ async function createRunBars(json) {
 			console.log('error al cargar la leaderboard');
 			runsDivLoading.innerText = 'Error al cargar la leaderboard, culpa de Luizón por no optimizar esto.';
 			console.log(err);
-			console.log(leaderboard.category)
+			console.log(leaderboard.category.ID)
 			if(err.responseJSON)
 				if(err.responseJSON.message)
 					alert(err.responseJSON.message);
@@ -160,6 +172,6 @@ window.onload = async function() {
 		vars = leaderboard.subcategory;
 	createRunBars({
 		game : leaderboard.game.ID,
-		category : leaderboard.category
+		category : leaderboard.category.ID
 	});
 }
