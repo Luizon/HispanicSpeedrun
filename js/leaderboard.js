@@ -17,7 +17,8 @@ var leaderboard = {
 		key : null,
 		name : null,
 		label : null,
-	}
+	},
+	variables : {}
 };
 
 async function loadCategories(json) {
@@ -64,13 +65,13 @@ async function loadCategories(json) {
 
 async function createSubcategories(categoryID) {
 	let apiURL = `${SPEEDRUN_API}/categories/${categoryID}/variables`;
-	console.log(apiURL);
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			let variables = apiAnswer.data
+			console.log(apiAnswer);
 			variables.forEach(variable => {
-				console.log(variable);
-				if(variable['is-subcategory'] && variable.scope.type.toLowerCase() == 'full-game') {
+				// en teoria ya carga solo las variables buenas, no se necesita checar el scope
+				if(variable['is-subcategory']) { // && ['full-game', 'global'].includes(variable.scope.type.toLowerCase())
 					leaderboard.subcategory.key = variable.id;
 					leaderboard.subcategory.name = variable.name;
 					let subcategoryKey = Object.keys(variable.values.values)[0];
@@ -97,6 +98,14 @@ async function createSubcategories(categoryID) {
 					leaderboard.subcategory.ID = subcategoryKey;
 					leaderboard.subcategory.label = variable.values.values[subcategoryKey].label;
 				}
+				else {
+					leaderboard.variables[variable.id] = {};
+					leaderboard.variables[variable.id].name = variable.name;
+					for(let iSubcategoryKey in variable.values.values) {
+						let variableLabel = variable.values.values[iSubcategoryKey].label;
+						leaderboard.variables[variable.id][iSubcategoryKey] = variableLabel;
+					}
+				}
 			});
 		})
 		.fail(err => {
@@ -107,7 +116,13 @@ async function createSubcategories(categoryID) {
 					alert(err.responseJSON.message);
 		});
 	
-	
+	console.log(leaderboard.variables)
+	let variables = "";
+	for(let iVariable in leaderboard.variables) {
+		variables+= `${leaderboard.variables[iVariable].name}, `;
+	}
+	if(variables)
+		variables = variables.substring(0, variables.length - 2); // quita el ", " del final
 
 	new RunBar({
 		hPosition : "Ñ",
@@ -116,7 +131,7 @@ async function createSubcategories(categoryID) {
 		player : "Runner",
 		time : "Tiempo",
 		date : "Fecha",
-		subcategory : leaderboard.subcategory.name || "",
+		subcategory : variables || leaderboard.subcategory.name || "",
 		parentNode: $("#runBarHeader")[0],
 		class_ : `odd run-bar-header`,
 	});
@@ -147,6 +162,13 @@ async function createRunBars(json) {
 				let runnerName = players.data[i].names.international;
 				runnersCountry = HISPANIC_COUNTRYS[runnersCountry.toLowerCase()]; // traduce pais a español
 
+				let variables = "";
+				for(let iVariable in run.run.values)
+					if(leaderboard.variables[iVariable])
+						variables+= `${leaderboard.variables[iVariable][run.run.values[iVariable]]}, `;
+				if(variables)
+					variables = variables.substring(0, variables.length - 2); // quita el ", " del final
+
 				runnersArray.push(new RunBar({
 					hPosition : hPosition++,
 					globalPosition : run.place,
@@ -158,11 +180,13 @@ async function createRunBars(json) {
 					time : formatTime(run.run.times.primary_t),
 					date : run.run.date,
 					parentNode: runsDiv,
-					subcategory : leaderboard.subcategory.label || '',
+					subcategory : variables || leaderboard.subcategory.label || '',
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				}));
 			});
 			runsDiv.removeChild(runsDivLoading);
+
+			document.title = `${$("#divTituloJuego").html()} - ${leaderboard.subcategory.label}`;
 		})
 		.fail(err => {
 			console.log('error al cargar la leaderboard');
@@ -178,6 +202,7 @@ async function createRunBars(json) {
 window.onload = async function() {
 	if(!urlParams.has('juego'))
 		window.location.href = "../";
+	document.title = `${urlParams.get('juego')} | Cargando informacion`;
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");
 	await loadCategories({ game : urlParams.get('juego') });
