@@ -12,7 +12,7 @@ export class RunBar extends HTML_POJO {
 		this.comment = json.comment || "";
 		this.time = json.time || "error";
 		this.date = json.date || "error";
-		this.subcategory = json.subcategory || "null";
+		this.subcategory = json.subcategory || "";
 		this.flag = this.img({
 			src : `https://speedrun.com/images/flags/${this.countryCode}.png`,
 			alt : '',
@@ -38,7 +38,7 @@ export class RunBar extends HTML_POJO {
 			+ this.div({class_ : 'col run-bar-position', innerHTML : this.globalPosition })
 			+ this.div({class_ : 'col run-bar-runner', innerHTML : (this.countryCode ? `${this.flag} ` : "") + `${this.player}` }) // si no tiene bandera, no se pondra el espacio
 			+ this.div({class_ : 'col run-bar-time', innerHTML : this.time })
-			+ ( this.subcategory ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategory}`}) : console.log("nel") ) // sin subcategoria no se pondra esta columna
+			+ ( this.subcategory ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategory}`}) : "" ) // sin subcategoria no se pondra esta columna
 			+ this.div({class_ : 'col run-bar-date d-none d-sm-block d-md-block d-lg-block d-xl-block', innerHTML : this.date });
 		if(this.url)
 			this.innerHTML = this.a({title: this.comment, class_ : 'row m-0 p-0', url : this.url, innerHTML : this.innerHTML });

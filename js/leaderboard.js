@@ -21,7 +21,7 @@ var leaderboard = {
 };
 
 async function loadCategories(json) {
-	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories,variables`;
+	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			console.log(apiAnswer);
@@ -34,7 +34,7 @@ async function loadCategories(json) {
 					return false;
 				categories.push(iCategory);
 				if(urlParams.has('categoria'))
-					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(" ", "_").replace("%", "")) {
+					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
 						leaderboard.category.code = iCategory.name;
 						leaderboard.category.ID = iCategory.id;
 					}
@@ -42,7 +42,7 @@ async function loadCategories(json) {
 				let categoryNode = document.createElement("a");
 				categoryNode.innerHTML = iCategory.name;
 				categoryNode.classList.add("btn", "btn-dark", "me-2", "mb-2");
-				categoryNode.href = `${hostname}/leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(" ", "_").replace("%", "")}`;
+				categoryNode.href = `${hostname}/leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
 				let elmentListNode = document.createElement("li");
 				elmentListNode.appendChild(categoryNode);
 				$("#categories").append(elmentListNode);
@@ -52,8 +52,6 @@ async function loadCategories(json) {
 				leaderboard.category.ID = categories[0].id;
 			}
 			$("#divTituloJuego").html(`${apiAnswer.data.names.international} - ${ leaderboard.category.code }`);
-
-			createSubcategories(apiAnswer.data.variables.data);
 		})
 		.fail(err => {
 			console.log('error al cargar la informacion del juego');
@@ -64,36 +62,52 @@ async function loadCategories(json) {
 		});
 }
 
-function createSubcategories(variables) {
-	variables.forEach(variable => {
-		if(variable['is-subcategory'] && variable.scope.type.toLowerCase() == 'full-game') {
-			console.log(variable)
-			leaderboard.subcategory.key = variable.id;
-			leaderboard.subcategory.name = variable.name;
-			let subcategoryKey = Object.keys(variable.values.values)[0];
-			for(let iSubcategoryKey in variable.values.values) {
-				let iSubcategoryName = variable.values.values[iSubcategoryKey].label;
-				if(urlParams.has('subcategoria'))
-					if(urlParams.get('subcategoria').toLowerCase() == iSubcategoryName.toLowerCase().replace(" ", "_").replace("%", "")) {
-						subcategoryKey = iSubcategoryKey;
+async function createSubcategories(categoryID) {
+	let apiURL = `${SPEEDRUN_API}/categories/${categoryID}/variables`;
+	console.log(apiURL);
+	await $.get(apiURL)
+		.done(apiAnswer => {
+			let variables = apiAnswer.data
+			variables.forEach(variable => {
+				console.log(variable);
+				if(variable['is-subcategory'] && variable.scope.type.toLowerCase() == 'full-game') {
+					leaderboard.subcategory.key = variable.id;
+					leaderboard.subcategory.name = variable.name;
+					let subcategoryKey = Object.keys(variable.values.values)[0];
+					for(let iSubcategoryKey in variable.values.values) {
+						let iSubcategoryName = variable.values.values[iSubcategoryKey].label;
+						if(urlParams.has('subcategoria'))
+							if(urlParams.get('subcategoria').toLowerCase() == iSubcategoryName.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
+								subcategoryKey = iSubcategoryKey;
+							}
+		
+						let subcategoryNode = document.createElement("a");
+						subcategoryNode.innerHTML = iSubcategoryName;
+						subcategoryNode.classList.add("btn", "btn-dark", "mb-2");
+						let category = leaderboard.category.code.replace(/ /g, "_").replace(/%/g, "");
+						iSubcategoryName = leaderboard.category.code.replace(/ /g, "_").replace(/%/g, "");
+						subcategoryNode.href = `${hostname}/leaderboard?juego=${urlParams.get('juego')}&categoria=${category}&subcategoria=${iSubcategoryName}`;
+						let elmentListNode = document.createElement("li");
+						elmentListNode.appendChild(subcategoryNode);
+						$("#subcategories").append(elmentListNode);
 					}
-
-				let subcategoryNode = document.createElement("a");
-				subcategoryNode.innerHTML = iSubcategoryName;
-				subcategoryNode.classList.add("btn", "btn-dark", "mb-2");
-				let category = leaderboard.category.code.replace(" ", "_").replace("%", "");
-				subcategoryNode.href = `${hostname}/leaderboard?juego=${urlParams.get('juego')}&categoria=${category}&subcategoria=${iSubcategoryName}`;
-				let elmentListNode = document.createElement("li");
-				elmentListNode.appendChild(subcategoryNode);
-				$("#subcategories").append(elmentListNode);
-			}
-			variable.values.values[subcategoryKey].rules; // reglas
-
-			// terminara tomando la ultima subcategoria encontrada
-			leaderboard.subcategory.ID = subcategoryKey;
-			leaderboard.subcategory.label = variable.values.values[subcategoryKey].label;
-		}
-	});
+					variable.values.values[subcategoryKey].rules; // reglas
+		
+					// terminara tomando la ultima subcategoria encontrada
+					leaderboard.subcategory.ID = subcategoryKey;
+					leaderboard.subcategory.label = variable.values.values[subcategoryKey].label;
+				}
+			});
+		})
+		.fail(err => {
+			console.log('error al cargar las subcategorias del juego');
+			console.log(err);
+			if(err.responseJSON)
+				if(err.responseJSON.message)
+					alert(err.responseJSON.message);
+		});
+	
+	
 
 	new RunBar({
 		hPosition : "Ñ",
@@ -167,6 +181,7 @@ window.onload = async function() {
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");
 	await loadCategories({ game : urlParams.get('juego') });
+	await createSubcategories( leaderboard.category.ID );
 	let vars = null;
 	if(leaderboard.subcategory.ID)
 		vars = leaderboard.subcategory;
