@@ -86,7 +86,7 @@ async function createSubcategories(categoryID) {
 						subcategoryNode.innerHTML = iSubcategoryName;
 						subcategoryNode.classList.add("btn", "btn-dark", "mb-2");
 						let category = leaderboard.category.code.replace(/ /g, "_").replace(/%/g, "");
-						iSubcategoryName = leaderboard.category.code.replace(/ /g, "_").replace(/%/g, "");
+						iSubcategoryName = iSubcategoryName.replace(/ /g, "_").replace(/%/g, "");
 						subcategoryNode.href = `${hostname}/leaderboard?juego=${urlParams.get('juego')}&categoria=${category}&subcategoria=${iSubcategoryName}`;
 						let elmentListNode = document.createElement("li");
 						elmentListNode.appendChild(subcategoryNode);
