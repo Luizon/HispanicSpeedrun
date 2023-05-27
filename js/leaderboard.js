@@ -304,6 +304,10 @@ window.onload = async function() {
 		$("#divDiscord")[0].href = "https://discord.gg/HkRAgg7cNy";
 		$("#divDiscord")[0].title = "Gruta del runner";
 	}
+	else
+		$("#divMensajeTope").html("Esta página ha sido pensada para Mario Odyssey y Mario 64."
+			+ "<br>Puedes usarla para ver runners hispanos de otros juegos, pero ten en cuenta que el discord que saldrá será el angloparlante y que podría haber algún problema no previsto con las subcategorías."
+		);
 	document.title = `${urlParams.get('juego')} | Cargando informacion`;
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");
