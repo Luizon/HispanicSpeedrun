@@ -157,3 +157,15 @@ a.hyperlink {
 .discord-leaderboard > a {
     padding: 0em;
 }
+
+.bootbox-close-button, .modal-title, .bootbox-body {
+    color: #000;
+}
+
+.bootbox-close-button {
+    float: right;
+}
+
+.bootbox-body {
+    text-align: justify;
+}
