@@ -29,13 +29,12 @@ export class RunBar extends HTML_POJO {
 			}
 			if(this.globalPosition < 5) {
 				if(topImg[this.globalPosition])
-				this.globalPosition = this.img({
-					src : topImg[this.globalPosition],
-					title : this.globalPosition,
-					class_ : "position-img",
-				});
+					this.globalPosition = this.img({
+						src : topImg[this.globalPosition],
+						title : this.globalPosition,
+						class_ : "position-img",
+					});
 		}
-		console.log(this.hPosition)
 
 		this.generateInnerHTML();
 		this.insertNode();

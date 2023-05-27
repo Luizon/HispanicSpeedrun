@@ -53,7 +53,6 @@ async function loadCategories(json) {
 				topImg[3] = apiAnswer.data.assets["trophy-3rd"].uri;
 			if(apiAnswer.data.assets["trophy-4th"])
 				topImg[4] = apiAnswer.data.assets["trophy-4th"].uri;
-			console.log(topImg);
 			leaderboard.game.ID = apiAnswer.data.id;
 			let categories = [];
 			leaderboard.category.name = null;
