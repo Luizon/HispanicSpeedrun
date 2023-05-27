@@ -3,7 +3,6 @@ import { formatTime } from "./functions.js"
 
 var runnersArray = [];
 var runsDiv = null, runsDivLoading = null;
-// var game.ID = null, category = null;
 var leaderboard = {
 	game : {
 		ID : null,
@@ -18,7 +17,8 @@ var leaderboard = {
 		name : null,
 		label : null,
 	},
-	variables : {}
+	variables : {},
+	runners : {}
 };
 var startedAt = null;
 var finished = false;
@@ -193,7 +193,8 @@ async function createRunBars(json) {
 	let hPosition = 1;
 	let apiURL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
 	apiURL+= "?embed=players"; // info extra para mostrar
-	// apiURL+= "&top=1000"; // limite
+	if(urlParams.has("top"))
+		apiURL+= "&top=" + urlParams.get("top"); // limite
 	if(leaderboard.subcategory.key) { // subcategorias
 		apiURL+= "&var-";
 		apiURL+= `${leaderboard.subcategory.key}=${leaderboard.subcategory.ID}`;
@@ -265,9 +266,21 @@ async function createRunBars(json) {
 				}
 			}
 			else {
+				let game = urlParams.get("juego");
+				let category = leaderboard.category.name;
+				let subcategory = leaderboard.subcategory.label || null;
+				let newParams = `?juego=${game}&categoria=${category}`;
+				if(subcategory)
+					newParams+= `&subcategoria=${subcategory}`;
+				if(urlParams.has("top"))
+					newParams+= `&top=${urlParams.get("top") / 2}`;
+				else
+					newParams+= `&top=2000`;
+					
 				$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
 					+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Prueba recargando la página."
-					+"<br>En ocasiones speedrun.com tarda demasiado en cargar y aparece este error.</h6>"
+					+ "<br>En ocasiones speedrun.com tarda demasiado en cargar y aparece este error.</h6>"
+					+ `<br><br>Si el problema persiste <a href="${hostname}/leaderboard/${newParams}">intenta cargar menos información en este link.</a>`
 				);
 			}
 	});
