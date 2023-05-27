@@ -16,17 +16,54 @@
 <body>
     <script src="../js/templates/nav.js"></script>
 
-    <h3 id="divTituloJuego"></h3>
+    <div class="row m-0">
+        <h3 id="divGameTitle" class="mb-3 col-12">
+            <img class="loading-title-img" src="../img/loading.svg" alt="Cargando titulo">
+            &nbsp;Cargando título
+        </h3>
+        <div class="col-12 col-lg-9 col-xl-9 p-0">
+            <div id="divLeaderboard" class="div-leaderboard">
+                <ul id="categories" class="category-list ps-0 mb-3 ms-3 me-3 pt-3">
+                    <img class="loading-category-img" src="../img/loading.svg" alt="Cargando categorias">
+                    &nbsp;Cargando categorías
+                </ul>
+                <ul id="subcategories" class="category-list ps-0 btn-group mb-3 ms-3 me-3">
+                    <div>
+                        <img class="loading-category-img" src="../img/loading.svg" alt="Cargando subcategorias">
+                        &nbsp;Cargando subcategorías
+                    </div>
+                </ul>
 
-    <div>
-        <ul id="categories" class="category-list ps-0"></ul>
-        <ul id="subcategories" class="category-list ps-0 btn-group"></ul>
-    </div>
-
-    <div id="divRunBars" class="run-bar-container">
-        <div id="runBarHeader"></div>
-        <div class="run-bar row row-even text-center" id="divRunBarsLoading">
-            Cargando leaderboard...
+                <div class="ms-3 me-3 mb-4 pb-3" style="border-radius: 4px;">
+                    <div id="divRunBars" class="run-bar-container">
+                        <div id="runBarHeader"></div>
+                        <div class="run-bar row row-even text-center" id="divRunBarsLoading" style="white-space: break-spaces;">
+                            <h5 id="loadingLeaderboardText"></h5>
+                            <h3 id="loadingLeaderboard">Cargando leaderboard</h3>
+                            <img class="loading-leaderboard-img" src="../img/loading.svg" alt="Cargando leaderboard">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-3 col-xl-3 p-0">
+            <div class="div-leaderboard">
+                <h2>Portada</h2>
+                <h2>Año</h2>
+                <h2>Plataformas</h2>
+                <h2>Discord global</h2>
+                <h2>Discord Ñ</h2>
+                <h3>Leaderboards</h3>
+                <h3>News</h3>
+                <h3>Guides</h3>
+                <h3>Resources</h3>
+                <h3>Streams</h3>
+                <h3>Forums</h3>
+                <h3>Stadistics</h3>
+                <h3>Boosters</h3>
+                <h3>ROM Hacks</h3>
+                <a href="https://www.speedrun.com/sm64#70_Star"><h5>ver leaderboard completa</h5></a>
+            </div>
         </div>
     </div>
     <script src="../js/templates/footer.js"></script>

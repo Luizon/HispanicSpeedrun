@@ -9,8 +9,8 @@ var leaderboard = {
 		ID : null,
 	},
 	category : {
-		code : null,
 		ID : null,
+		name : null,
 	},
 	subcategory : {
 		ID : null,
@@ -20,7 +20,21 @@ var leaderboard = {
 	},
 	variables : {}
 };
+var startedAt = null;
+var finished = false;
 
+async function luizonShouldOptimizeThisWebPage() {
+	while(!finished) {//!finished) {
+		await sleep(333);
+		if((new Date() - startedAt.getTime()) / 1000 > 8 && $("#loadingLeaderboardText").html().length == 0)
+			$("#loadingLeaderboardText").html("Speedrun.com está demorándose en contestar, por favor espere.");
+	}
+}
+
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+  
 async function loadCategories(json) {
 	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories`;
 	await $.get(apiURL)
@@ -28,39 +42,55 @@ async function loadCategories(json) {
 			console.log(apiAnswer);
 			leaderboard.game.ID = apiAnswer.data.id;
 			let categories = [];
-			leaderboard.category.code = null;
+			leaderboard.category.name = null;
 			leaderboard.category.ID = null;
-			apiAnswer.data.categories.data.forEach(iCategory => {
+			$("#categories").html("");
+			apiAnswer.data.categories.data.forEach((iCategory, i) => {
 				if(iCategory.type == "per-level")
 					return false;
 				categories.push(iCategory);
-				if(urlParams.has('categoria'))
-					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
-						leaderboard.category.code = iCategory.name;
-						leaderboard.category.ID = iCategory.id;
-					}
-				
 				let categoryNode = document.createElement("a");
 				categoryNode.innerHTML = iCategory.name;
-				categoryNode.classList.add("btn", "btn-dark", "me-2", "mb-2");
+				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
+				categoryNode.id = "btnCa"+i;
 				categoryNode.href = `${hostname}/leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
+				if(urlParams.has('categoria'))
+					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
+						leaderboard.category.name = iCategory.name;
+						leaderboard.category.ID = iCategory.id;
+						categoryNode.classList.add("btn-active");
+					}
+				
 				let elmentListNode = document.createElement("li");
 				elmentListNode.appendChild(categoryNode);
 				$("#categories").append(elmentListNode);
 			});
-			if(leaderboard.category.code == null) {
-				leaderboard.category.code = categories[0].name;
+			if(leaderboard.category.name == null) {
+				leaderboard.category.name = categories[0].name;
 				leaderboard.category.ID = categories[0].id;
+				$("#btnCa0").addClass("btn-active");
 			}
-			$("#divTituloJuego").html(`${apiAnswer.data.names.international} - ${ leaderboard.category.code }`);
+			$("#divGameTitle").html(`${apiAnswer.data.names.international} - ${ leaderboard.category.name }`);
 		})
 		.fail(err => {
-			console.log('error al cargar la informacion del juego');
+			finished = true;
+			$("#loadingLeaderboardText").html('Ocurrió un error al intentar cargar la información del juego.');
+			$("#loadingLeaderboard").remove();
+			$("#subcategories").remove();
+			$("#categories").remove();
+			$("#divGameTitle").remove();
+			$(".loading-leaderboard-img").remove();
+			console.log('error al cargar la info del juego');
 			console.log(err);
 			if(err.responseJSON)
-				if(err.responseJSON.message)
-					alert(err.responseJSON.message);
-		});
+				if(err.responseJSON.message) {
+					// alert(err.responseJSON.message);
+					$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
+						+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Respuesta de speedrun.com:"
+						+ `<br>${err.responseJSON.message}</h6>`
+					);
+				}
+	});
 }
 
 async function createSubcategories(categoryID) {
@@ -69,23 +99,28 @@ async function createSubcategories(categoryID) {
 		.done(apiAnswer => {
 			let variables = apiAnswer.data
 			console.log(apiAnswer);
+			let hasSubcategories = false;
 			variables.forEach(variable => {
 				// en teoria ya carga solo las variables buenas, no se necesita checar el scope
+				let i = 0;
 				if(variable['is-subcategory']) { // && ['full-game', 'global'].includes(variable.scope.type.toLowerCase())
+					hasSubcategories = true;
 					leaderboard.subcategory.key = variable.id;
 					leaderboard.subcategory.name = variable.name;
 					let subcategoryKey = Object.keys(variable.values.values)[0];
 					for(let iSubcategoryKey in variable.values.values) {
 						let iSubcategoryName = variable.values.values[iSubcategoryKey].label;
+						let subcategoryNode = document.createElement("a");
+						subcategoryNode.innerHTML = iSubcategoryName;
+						subcategoryNode.classList.add("btn", "btn-secondary", "mb-2");
+						subcategoryNode.id = "btnSubCa" + i++;
 						if(urlParams.has('subcategoria'))
 							if(urlParams.get('subcategoria').toLowerCase() == iSubcategoryName.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
 								subcategoryKey = iSubcategoryKey;
+								subcategoryNode.classList.add("btn-active");
 							}
 		
-						let subcategoryNode = document.createElement("a");
-						subcategoryNode.innerHTML = iSubcategoryName;
-						subcategoryNode.classList.add("btn", "btn-dark", "mb-2");
-						let category = leaderboard.category.code.replace(/ /g, "_").replace(/%/g, "");
+						let category = leaderboard.category.name.replace(/ /g, "_").replace(/%/g, "");
 						iSubcategoryName = iSubcategoryName.replace(/ /g, "_").replace(/%/g, "");
 						subcategoryNode.href = `${hostname}/leaderboard?juego=${urlParams.get('juego')}&categoria=${category}&subcategoria=${iSubcategoryName}`;
 						let elmentListNode = document.createElement("li");
@@ -94,7 +129,8 @@ async function createSubcategories(categoryID) {
 					}
 					variable.values.values[subcategoryKey].rules; // reglas
 		
-					// terminara tomando la ultima subcategoria encontrada
+					if(subcategoryKey == Object.keys(variable.values.values)[0])
+						$("#btnSubCa0")[0].classList.add("btn-active");
 					leaderboard.subcategory.ID = subcategoryKey;
 					leaderboard.subcategory.label = variable.values.values[subcategoryKey].label;
 				}
@@ -107,13 +143,29 @@ async function createSubcategories(categoryID) {
 					}
 				}
 			});
+			$("#subcategories div").remove(); // remueve del documento al div de "cargando subcategorias"
+			if(!hasSubcategories) {
+				let subcategoryTextNode = document.createElement('p');
+				subcategoryTextNode.innerHTML = `<strong>${leaderboard.category.name}</strong> no tiene subcategorías.`
+				$("#subcategories").append(subcategoryTextNode);
+			}
 		})
 		.fail(err => {
+			finished = true;
+			$("#loadingLeaderboardText").html('Ocurrió un error al intentar cargar las subcategorías del juego.');
+			$("#loadingLeaderboard").remove();
+			$("#subcategories").remove();
+			$(".loading-leaderboard-img").remove();
 			console.log('error al cargar las subcategorias del juego');
 			console.log(err);
 			if(err.responseJSON)
-				if(err.responseJSON.message)
-					alert(err.responseJSON.message);
+				if(err.responseJSON.message) {
+					// alert(err.responseJSON.message);
+					$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
+						+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Respuesta de speedrun.com:"
+						+ `<br>${err.responseJSON.message}</h6>`
+					);
+				}
 		});
 	
 	console.log(leaderboard.variables)
@@ -184,24 +236,48 @@ async function createRunBars(json) {
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				}));
 			});
-			runsDiv.removeChild(runsDivLoading);
+			if(runnersArray.length > 0)
+				runsDiv.removeChild(runsDivLoading);
+			else {
+				$("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
+				$("#loadingLeaderboard").remove();
+				$(".loading-leaderboard-img").remove();
+			}
 
-			document.title = `${$("#divTituloJuego").html()} - ${leaderboard.subcategory.label}`;
+			document.title = `${$("#divGameTitle").html()} - ${leaderboard.subcategory.label}`;
+			finished = true;
 		})
 		.fail(err => {
+			finished = true;
 			console.log('error al cargar la leaderboard');
-			runsDivLoading.innerText = 'Error al cargar la leaderboard, culpa de Luizón por no optimizar esto.';
+			$("#loadingLeaderboardText").text('Error al cargar la leaderboard, culpa de Luizón.');
+			$("#loadingLeaderboard").remove();
+			$(".loading-leaderboard-img").remove();
 			console.log(err);
 			console.log(leaderboard.category.ID)
-			if(err.responseJSON)
-				if(err.responseJSON.message)
-					alert(err.responseJSON.message);
-		});
+			if(err.responseJSON) {
+				if(err.responseJSON.message) {
+					// alert(err.responseJSON.message);
+					$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
+						+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Respuesta de speedrun.com:"
+						+ `<br>${err.responseJSON.message}</h6>`
+					);
+				}
+			}
+			else {
+				$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
+					+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Prueba recargando la página."
+					+"<br>En ocasiones speedrun.com tarda demasiado en cargar y aparece este error.</h6>"
+				);
+			}
+	});
 }
 
 window.onload = async function() {
 	if(!urlParams.has('juego'))
 		window.location.href = "../";
+	startedAt = new Date();
+	luizonShouldOptimizeThisWebPage();
 	document.title = `${urlParams.get('juego')} | Cargando informacion`;
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");
