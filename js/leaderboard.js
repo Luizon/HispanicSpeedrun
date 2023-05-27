@@ -272,11 +272,11 @@ async function createRunBars(json) {
 			}
 			else {
 				let game = urlParams.get("juego");
-				let category = leaderboard.category.name;
+				let category = leaderboard.category.name.replace(" ", "_").replace("%", "");
 				let subcategory = leaderboard.subcategory.label || null;
 				let newParams = `?juego=${game}&categoria=${category}`;
 				if(subcategory)
-					newParams+= `&subcategoria=${subcategory}`;
+					newParams+= `&subcategoria=${subcategory.replace(" ", "_").replace("%", "")}`;
 				if(urlParams.has("top"))
 					newParams+= `&top=${urlParams.get("top") / 2}`;
 				else
