@@ -1,9 +1,13 @@
+html {
+    background-size: 100%;
+}
+
 * {
     color: cornsilk;
 }
 
 body {
-    background: #420666;
+    background: #420666ee;
     padding: 0px;
     margin: 0px;
     text-align: center;
@@ -107,7 +111,6 @@ a.row:hover, .category-list li a:hover, a.btn-dark:hover {
 
 .div-leaderboard {
     background: #0004;
-    margin: 1em;
     border-radius: .4em;
 }
 
@@ -129,4 +132,28 @@ a.row:hover, .category-list li a:hover, a.btn-dark:hover {
 .btn-active {
     background: #2e3e4c;
     border: none;
+}
+
+a.hyperlink {
+    color: rgb(255, 74, 255);
+}
+
+.discord-leaderboard {
+    border-radius: 100%;
+    padding: .2em;
+    width: 2.5em;
+    height: 2.5em;
+    background-color: #fff;
+    position: relative;
+    float: right;
+    top: 1em;
+    right: 1em;
+}
+
+.discord-leaderboard > a > img {
+    width: 100%;
+}
+
+.discord-leaderboard > a {
+    padding: 0em;
 }

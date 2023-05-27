@@ -26,7 +26,7 @@ var finished = false;
 async function luizonShouldOptimizeThisWebPage() {
 	while(!finished) {//!finished) {
 		await sleep(333);
-		if((new Date() - startedAt.getTime()) / 1000 > 8 && $("#loadingLeaderboardText").html().length == 0)
+		if((new Date() - startedAt.getTime()) / 1000 > 10 && $("#loadingLeaderboardText").html().length == 0)
 			$("#loadingLeaderboardText").html("Speedrun.com está demorándose en contestar, por favor espere.");
 	}
 }
@@ -40,6 +40,11 @@ async function loadCategories(json) {
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			console.log(apiAnswer);
+			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri}')`; // background
+			if($("#divDiscord")[0].href.length == 0) {
+				$("#divDiscord")[0].href = apiAnswer.data.discord;
+				$("#divDiscord")[0].title = `Comunidad angloparlante de ${apiAnswer.data.names.international}`;
+			}
 			leaderboard.game.ID = apiAnswer.data.id;
 			let categories = [];
 			leaderboard.category.name = null;
@@ -53,7 +58,7 @@ async function loadCategories(json) {
 				categoryNode.innerHTML = iCategory.name;
 				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
 				categoryNode.id = "btnCa"+i;
-				categoryNode.href = `${hostname}/leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
+				categoryNode.href = `../leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
 				if(urlParams.has('categoria'))
 					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
 						leaderboard.category.name = iCategory.name;
@@ -122,7 +127,7 @@ async function createSubcategories(categoryID) {
 		
 						let category = leaderboard.category.name.replace(/ /g, "_").replace(/%/g, "");
 						iSubcategoryName = iSubcategoryName.replace(/ /g, "_").replace(/%/g, "");
-						subcategoryNode.href = `${hostname}/leaderboard?juego=${urlParams.get('juego')}&categoria=${category}&subcategoria=${iSubcategoryName}`;
+						subcategoryNode.href = `../leaderboard?juego=${urlParams.get('juego')}&categoria=${category}&subcategoria=${iSubcategoryName}`;
 						let elmentListNode = document.createElement("li");
 						elmentListNode.appendChild(subcategoryNode);
 						$("#subcategories").append(elmentListNode);
@@ -280,7 +285,7 @@ async function createRunBars(json) {
 				$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
 					+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Prueba recargando la página."
 					+ "<br>En ocasiones speedrun.com tarda demasiado en cargar y aparece este error.</h6>"
-					+ `<br><br>Si el problema persiste <a href="${hostname}/leaderboard/${newParams}">intenta cargar menos información en este link.</a>`
+					+ `<br><br>Si el problema persiste <a href="../leaderboard/${newParams}" class="hyperlink">intenta cargar menos información en este link.</a>`
 				);
 			}
 	});
@@ -291,6 +296,14 @@ window.onload = async function() {
 		window.location.href = "../";
 	startedAt = new Date();
 	luizonShouldOptimizeThisWebPage();
+	if(urlParams.get("juego").toLowerCase() == 'sm64') {
+		$("#divDiscord")[0].href = "https://discord.gg/2Vx5DeJvQP";
+		$("#divDiscord")[0].title = "Comunidad Ñ del Mario 64";
+	}
+	else if(urlParams.get("juego").toLowerCase() == 'smo') {
+		$("#divDiscord")[0].href = "https://discord.gg/HkRAgg7cNy";
+		$("#divDiscord")[0].title = "Gruta del runner";
+	}
 	document.title = `${urlParams.get('juego')} | Cargando informacion`;
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");

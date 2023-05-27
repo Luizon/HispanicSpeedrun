@@ -27,9 +27,9 @@ navbarNode.classList.add("mb-4");
 document.querySelector("body").appendChild(navbarNode);
 
 let divMargin = document.createElement('div');
-divMargin.style = "margin-bottom: 4em;";
 document.querySelector("body").appendChild(divMargin);
 
 let divDesarrollando = document.createElement('p');
-divDesarrollando.innerHTML = 'Esta página actualmente está en desarrollo y en fase de pruebas.';
+divDesarrollando.style = "padding-top: 4em;";
+// divDesarrollando.innerHTML = 'Esta página actualmente está en desarrollo y en fase de pruebas.';
 document.querySelector("body").appendChild(divDesarrollando);
