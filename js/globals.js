@@ -1,3 +1,11 @@
+// top 4 img
+var topImg = {
+    1 : null,
+    2 : null,
+    3 : null,
+    4 : null,
+}
+
 // counters
 var objCounter = 0;
 

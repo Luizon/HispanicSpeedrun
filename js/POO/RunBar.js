@@ -19,6 +19,24 @@ export class RunBar extends HTML_POJO {
 			class_ : "runner-flag",
 			title : this.country,
 		});
+		if(this.hPosition < 5) {
+			if(topImg[this.hPosition])
+				this.hPosition = this.img({
+					src : topImg[this.hPosition],
+					title : this.hPosition,
+					class_ : "position-img",
+				});
+			}
+			if(this.globalPosition < 5) {
+				if(topImg[this.globalPosition])
+				this.globalPosition = this.img({
+					src : topImg[this.globalPosition],
+					title : this.globalPosition,
+					class_ : "position-img",
+				});
+		}
+		console.log(this.hPosition)
+
 		this.generateInnerHTML();
 		this.insertNode();
 		// this.updateHTML();

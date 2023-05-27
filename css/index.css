@@ -173,3 +173,8 @@ a.hyperlink.dark {
 .bootbox-body {
     text-align: justify;
 }
+
+.position-img {
+    width: 20px;
+    height: 20px;
+}

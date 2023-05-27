@@ -45,6 +45,15 @@ async function loadCategories(json) {
 				$("#divDiscord")[0].href = apiAnswer.data.discord;
 				$("#divDiscord")[0].title = `Comunidad angloparlante de ${apiAnswer.data.names.international}`;
 			}
+			if(apiAnswer.data.assets["trophy-1st"])
+				topImg[1] = apiAnswer.data.assets["trophy-1st"].uri;
+			if(apiAnswer.data.assets["trophy-2nd"])
+				topImg[2] = apiAnswer.data.assets["trophy-2nd"].uri;
+			if(apiAnswer.data.assets["trophy-3rd"])
+				topImg[3] = apiAnswer.data.assets["trophy-3rd"].uri;
+			if(apiAnswer.data.assets["trophy-4th"])
+				topImg[4] = apiAnswer.data.assets["trophy-4th"].uri;
+			console.log(topImg);
 			leaderboard.game.ID = apiAnswer.data.id;
 			let categories = [];
 			leaderboard.category.name = null;
