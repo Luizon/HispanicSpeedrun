@@ -55,6 +55,6 @@ function contactanos() {
   bootbox.dialog({
     title: "Contáctanos",
     onEscape : true,
-    message: "Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
+    message: "Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink dark' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
   });
 }

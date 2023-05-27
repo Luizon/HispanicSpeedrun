@@ -138,6 +138,10 @@ a.hyperlink {
     color: rgb(255, 74, 255);
 }
 
+a.hyperlink.dark {
+    color: #420666;
+}
+
 .discord-leaderboard {
     border-radius: 100%;
     padding: .2em;

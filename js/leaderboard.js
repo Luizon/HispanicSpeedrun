@@ -285,7 +285,7 @@ async function createRunBars(json) {
 				$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
 					+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Prueba recargando la página."
 					+ "<br>En ocasiones speedrun.com tarda demasiado en cargar y aparece este error.</h6>"
-					+ `<br><br>Si el problema persiste <a href="../leaderboard/${newParams}" class="hyperlink">intenta cargar menos información en este link.</a>`
+					+ `<br><br>Si el problema persiste <a href="../leaderboard/${newParams}" class="hyperlink dark">intenta cargar menos información en este link.</a>`
 				);
 			}
 	});
