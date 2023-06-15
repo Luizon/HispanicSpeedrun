@@ -29,8 +29,9 @@ var finished = false;
 async function luizonShouldOptimizeThisWebPage() {
 	while(!finished) {//!finished) {
 		await sleep(333);
-		if((new Date() - startedAt.getTime()) / 1000 > 10 && $("#loadingLeaderboardText").html().length == 0)
-			$("#loadingLeaderboardText").html("Speedrun.com está demorándose en contestar, por favor espere.");
+		if($("#loadingLeaderboardText") > 0)
+			if((new Date() - startedAt.getTime()) / 1000 > 10 && $("#loadingLeaderboardText").html().length == 0)
+				$("#loadingLeaderboardText").html("Speedrun.com está demorándose en contestar, por favor espere.");
 	}
 }
 
@@ -409,7 +410,6 @@ async function loadRuns(apiURL, limite = false) {
 			apiURL+= "?";
 		apiURL+=`top=${limite}`;
 	}
-	let runsLoaded = false;
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			// console.log(apiAnswer)
@@ -419,7 +419,11 @@ async function loadRuns(apiURL, limite = false) {
 				if(!urlParams.has("top") && !limite)
 					if(i < DEFAULT_LIMIT)
 						return false;
-				if(!Object.keys(HISPANIC_AREA_ID).includes(playersArray[i].areaId))
+				if(!playersArray[i]) // ni idea porque esto pasaria, pero parece que pasa 2 veces
+					return false;
+				if(!playersArray[i].areaId) // se salta jugadores sin pais definido
+					return false;
+				if(!Object.keys(HISPANIC_AREA_ID).includes(playersArray[i].areaId)) // se salta jugadores cuyo pais no este definido
 					return false;
 				
 				let variables = "";
@@ -447,7 +451,6 @@ async function loadRuns(apiURL, limite = false) {
 			});
 
 			finished = true;
-			runsLoaded = true;
 		})
 		.fail(err => {
 			finished = true;
@@ -485,14 +488,10 @@ async function loadRuns(apiURL, limite = false) {
 					+ `<br><br>Si el problema persiste <a href="../leaderboard/${newParams}" class="hyperlink dark">intenta cargar menos información en este link.</a>`
 				);
 			}
-			runsLoaded = false;
 		});
-
-	return runsLoaded;
 }
 
 async function loadPlayers(apiURLV2) {
-	let playersLoaded = false;
 	console.log(apiURLV2);
 	await $.get(apiURLV2)
 		.done(apiAnswer => {
@@ -503,7 +502,6 @@ async function loadPlayers(apiURLV2) {
 					name: player.name
 				});
 			});
-			playersLoaded = true;
 		})
 		.fail(err => {
 			finished = true;
@@ -526,9 +524,7 @@ async function loadPlayers(apiURLV2) {
 				+ `<br><br><h6>Se está trabajando en solucionar este error para que no se repita.`
 				+ `<br>Intenta recargar la página, a veces funciona.</h6>`
 			);
-			playersLoaded = false;
 		});
-	return playersLoaded;
 }
 
 window.onload = async function() {
