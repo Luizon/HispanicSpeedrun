@@ -1,7 +1,10 @@
 import { RunBar } from "./POO/RunBar.js";
 import { formatTime } from "./functions.js"
 
-var runnersArray = [];
+// var runnersArray = []; // ya no se usa
+var hPosition = 1;
+var runsArray = []; // array de runs
+var playersArray = []; // array de jugadores
 var runsDiv = null, runsDivLoading = null;
 var leaderboard = {
 	game : {
@@ -202,32 +205,185 @@ async function createSubcategories(categoryID) {
 	});
 }
 
+// API v1, carga demasiado lento
+// async function createRunBars(json) {
+// 	let hPosition = 1;
+// 	let apiURL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
+// 	apiURL+= "?embed=players"; // info extra para mostrar
+// 	if(urlParams.has("top"))
+// 		apiURL+= "&top=" + urlParams.get("top"); // limite
+// 	if(leaderboard.subcategory.key) { // subcategorias
+// 		apiURL+= "&var-";
+// 		apiURL+= `${leaderboard.subcategory.key}=${leaderboard.subcategory.ID}`;
+// 	}
+// 	await $.get(apiURL)
+// 		.done(apiAnswer => {
+// 			console.log(apiAnswer)
+// 			let runs = apiAnswer.data.runs;
+// 			let players = apiAnswer.data.players;
+// 			runs.forEach(async (run, i) => {
+// 				if(players.data[i].location == null) // hay runners que no tienen su pais puesto
+// 					return false; // estos runners se omiten
+// 				let runnersCountry = players.data[i].location.country.names.international;
+
+// 				// si el pais no es hispano, no se agrega la run
+// 				if(!Object.keys(HISPANIC_COUNTRYS).includes(runnersCountry.toLowerCase()))
+// 					return false;
+// 				let runnerName = players.data[i].names.international;
+// 				runnersCountry = HISPANIC_COUNTRYS[runnersCountry.toLowerCase()]; // traduce pais a español
+
+// 				let variables = "";
+// 				for(let iVariable in run.run.values)
+// 					if(leaderboard.variables[iVariable])
+// 						variables+= `${leaderboard.variables[iVariable][run.run.values[iVariable]]}, `;
+// 				if(variables)
+// 					variables = variables.substring(0, variables.length - 2); // quita el ", " del final
+
+// 				runnersArray.push(new RunBar({
+// 					hPosition : hPosition++,
+// 					globalPosition : run.place,
+// 					countryCode : players.data[i].location.country.code,
+// 					country : runnersCountry,
+// 					player : runnerName,
+// 					url : run.run.weblink,
+// 					comment : run.run.comment,
+// 					time : formatTime(run.run.times.primary_t),
+// 					date : run.run.date,
+// 					parentNode: runsDiv,
+// 					subcategory : variables || leaderboard.subcategory.label || '',
+// 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
+// 				}));
+// 			});
+// 			if(runnersArray.length > 0)
+// 				runsDiv.removeChild(runsDivLoading);
+// 			else {
+// 				$("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
+// 				$("#loadingLeaderboard").remove();
+// 				$(".loading-leaderboard-img").remove();
+// 			}
+
+// 			document.title = `${$("#divGameTitle").html()} - ${leaderboard.subcategory.label}`;
+// 			finished = true;
+// 		})
+// 		.fail(err => {
+// 			finished = true;
+// 			console.log('error al cargar la leaderboard');
+// 			$("#loadingLeaderboardText").text('Error al cargar la leaderboard, culpa de Luizón.');
+// 			$("#loadingLeaderboard").remove();
+// 			$(".loading-leaderboard-img").remove();
+// 			console.log(err);
+// 			console.log(leaderboard.category.ID)
+// 			if(err.responseJSON) {
+// 				if(err.responseJSON.message) {
+// 					// alert(err.responseJSON.message);
+// 					$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
+// 						+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Respuesta de speedrun.com:"
+// 						+ `<br>${err.responseJSON.message}</h6>`
+// 					);
+// 				}
+// 			}
+// 			else {
+// 				let game = urlParams.get("juego");
+// 				let category = leaderboard.category.name.replace(" ", "_").replace("%", "");
+// 				let subcategory = leaderboard.subcategory.label || null;
+// 				let newParams = `?juego=${game}&categoria=${category}`;
+// 				if(subcategory)
+// 					newParams+= `&subcategoria=${subcategory.replace(" ", "_").replace("%", "")}`;
+// 				if(urlParams.has("top"))
+// 					newParams+= `&top=${urlParams.get("top") / 2}`;
+// 				else
+// 					newParams+= `&top=2000`;
+					
+// 				$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
+// 					+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Prueba recargando la página."
+// 					+ "<br>En ocasiones speedrun.com tarda demasiado en cargar y aparece este error.</h6>"
+// 					+ `<br><br>Si el problema persiste <a href="../leaderboard/${newParams}" class="hyperlink dark">intenta cargar menos información en este link.</a>`
+// 				);
+// 			}
+// 	});
+// }
+
+function encode64(gameId, categoryId) {
+	// se asume que si hay subcaegoria, esto generara error en leaderboards sin subcategoria
+	let variables = "";
+	if(leaderboard.subcategory.key) {
+		variables = `{"variableId":"${leaderboard.subcategory.key}","valueIds":["${leaderboard.subcategory.ID}"]}`;
+		/*
+			para multiples variables, usar un json separado por coma por cada una en este formato:
+			{"variableId":"varId","valueIds":["valId"]},{"variableId":"varId","valueIds":["valId","val2Id"]},{"variableId":"varId","valueIds":["valId"]}
+		*/
+	}
+	let rawJson = `{"params":{"gameId":"${gameId}","categoryId":"${categoryId}","values":[${variables}],"emulator":1},"page":1,"vary":1686768609}`;
+	
+	let output = btoa(rawJson);
+	output = output.replace(/=/g, "");
+	return output;
+}
+
+// carga runs con API v1 y carga runners con API v2
 async function createRunBars(json) {
-	let hPosition = 1;
-	let apiURL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
-	apiURL+= "?embed=players"; // info extra para mostrar
-	if(urlParams.has("top"))
-		apiURL+= "&top=" + urlParams.get("top"); // limite
+	let apiV1URL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
+	let apiV2URL = `${SPEEDRUN_API_V2}/GetGameLeaderboard?_r=${encode64(json.game, json.category)}`;
+
+	console.log(apiV2URL);
+	
+	await loadPlayers(apiV2URL);
+
 	if(leaderboard.subcategory.key) { // subcategorias
-		apiURL+= "&var-";
-		apiURL+= `${leaderboard.subcategory.key}=${leaderboard.subcategory.ID}`;
+		apiV1URL+= "?var-";
+		apiV1URL+= `${leaderboard.subcategory.key}=${leaderboard.subcategory.ID}`;
+	}
+	if(urlParams.has("top")) {
+		await loadRuns(apiV1URL, urlParams.get("top")); // limite puesto por usuario
+	}
+	else {
+		await loadRuns(apiV1URL, DEFAULT_LIMIT); // limite por defecto
+		runsArray.forEach((runner, i) => {
+			new RunBar(runner);
+		});
+		if(DEFAULT_LIMIT < playersArray.length) {
+			$("#loadingLeaderboardText").html("Se está cargando el resto de posiciones. Por favor espere.");
+		}
+		await loadRuns(apiV1URL); // carga todas las runs
+	}
+	runsArray.forEach((runner, i) => {
+		// si son menos runs que DEFAULT_LIMIT, aqui no va a entrar a menos que se haya puesto un tope desde url
+		new RunBar(runner);
+	});
+
+	// if(runsArray.length > 0)
+	if($("#obj2")[0] != undefined) // obj2 es el primer puesto en la leaderboard. obj1 es el encabezado de la tabla
+		runsDiv.removeChild(runsDivLoading);
+	else {
+		$("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
+		$("#loadingLeaderboard").remove();
+		$(".loading-leaderboard-img").remove();
+	}
+
+
+	document.title = `${$("#divGameTitle").html()} - ${leaderboard.subcategory.label}`;
+}
+
+async function loadRuns(apiURL, limite = false) {
+	if(limite) {
+		if(apiURL.includes("?"))
+			apiURL+= "&";
+		else
+			apiURL+= "?";
+		apiURL+=`top=${limite}`;
 	}
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			console.log(apiAnswer)
 			let runs = apiAnswer.data.runs;
-			let players = apiAnswer.data.players;
+			runsArray = [];
 			runs.forEach(async (run, i) => {
-				if(players.data[i].location == null) // hay runners que no tienen su pais puesto
-					return false; // estos runners se omiten
-				let runnersCountry = players.data[i].location.country.names.international;
-
-				// si el pais no es hispano, no se agrega la run
-				if(!Object.keys(HISPANIC_COUNTRYS).includes(runnersCountry.toLowerCase()))
+				if(!urlParams.has("top") && !limite)
+					if(i < DEFAULT_LIMIT)
+						return false;
+				if(!Object.keys(HISPANIC_AREA_ID).includes(playersArray[i].areaId))
 					return false;
-				let runnerName = players.data[i].names.international;
-				runnersCountry = HISPANIC_COUNTRYS[runnersCountry.toLowerCase()]; // traduce pais a español
-
+				
 				let variables = "";
 				for(let iVariable in run.run.values)
 					if(leaderboard.variables[iVariable])
@@ -235,12 +391,13 @@ async function createRunBars(json) {
 				if(variables)
 					variables = variables.substring(0, variables.length - 2); // quita el ", " del final
 
-				runnersArray.push(new RunBar({
+				runsArray.push({
 					hPosition : hPosition++,
 					globalPosition : run.place,
-					countryCode : players.data[i].location.country.code,
-					country : runnersCountry,
-					player : runnerName,
+					countryCode : playersArray[i].areaId,
+					country : HISPANIC_AREA_ID[playersArray[i].areaId],
+					// player : run.run.players[0].id,
+					player : playersArray[i].name,
 					url : run.run.weblink,
 					comment : run.run.comment,
 					time : formatTime(run.run.times.primary_t),
@@ -248,17 +405,9 @@ async function createRunBars(json) {
 					parentNode: runsDiv,
 					subcategory : variables || leaderboard.subcategory.label || '',
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
-				}));
+				});
 			});
-			if(runnersArray.length > 0)
-				runsDiv.removeChild(runsDivLoading);
-			else {
-				$("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
-				$("#loadingLeaderboard").remove();
-				$(".loading-leaderboard-img").remove();
-			}
 
-			document.title = `${$("#divGameTitle").html()} - ${leaderboard.subcategory.label}`;
 			finished = true;
 		})
 		.fail(err => {
@@ -296,7 +445,29 @@ async function createRunBars(json) {
 					+ `<br><br>Si el problema persiste <a href="../leaderboard/${newParams}" class="hyperlink dark">intenta cargar menos información en este link.</a>`
 				);
 			}
-	});
+		});
+}
+
+async function loadPlayers(apiURLV2) {
+	await $.get(apiURLV2)
+		.done(apiAnswer => {
+			console.log(apiAnswer)
+			apiAnswer.leaderboard.players.forEach(player => {
+				playersArray.push({
+					areaId : player.areaId,
+					name: player.name
+				});
+			});
+		})
+		.fail(err => {
+			finished = true;
+			console.log('error al cargar a los runners');
+			bootbox.message({
+				title: 'Error',
+				message: 'No se cargaron los runners de forma correcta.'
+						+ '<br>Culpa de Luizón.'
+			});
+		});
 }
 
 window.onload = async function() {
@@ -316,15 +487,16 @@ window.onload = async function() {
 		$("#divMensajeTope").html("Esta página ha sido pensada para Mario Odyssey y Mario 64."
 			+ "<br>Puedes usarla para ver runners hispanos de otros juegos, pero ten en cuenta que el discord que saldrá será el angloparlante y que podría haber algún problema no previsto con las subcategorías."
 		);
+
 	document.title = `${urlParams.get('juego')} | Cargando informacion`;
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");
-	await loadCategories({ game : urlParams.get('juego') });
-	await createSubcategories( leaderboard.category.ID );
+	await loadCategories({ game : urlParams.get('juego') }); // carga categorias y titulo del juego
+	await createSubcategories( leaderboard.category.ID ); // carga subcategorias
 	let vars = null;
 	if(leaderboard.subcategory.ID)
 		vars = leaderboard.subcategory;
-	createRunBars({
+	createRunBars({ // carga la leaderboard como tal
 		game : leaderboard.game.ID,
 		category : leaderboard.category.ID
 	});
