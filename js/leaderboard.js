@@ -42,7 +42,7 @@ async function loadCategories(json) {
 	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
-			console.log(apiAnswer);
+			// console.log(apiAnswer);
 			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri}')`; // background
 			if($("#divDiscord")[0].href.length == 0) {
 				$("#divDiscord")[0].href = apiAnswer.data.discord;
@@ -90,12 +90,13 @@ async function loadCategories(json) {
 		})
 		.fail(err => {
 			finished = true;
-			$("#loadingLeaderboardText").html('Ocurrió un error al intentar cargar la información del juego.');
-			$("#loadingLeaderboard").remove();
+			// $("#loadingLeaderboardText").html('Ocurrió un error al intentar cargar la información del juego.');
+			// $("#loadingLeaderboard").remove();
+			// $(".loading-leaderboard-img").remove();
+			errorLoadingRuns('Ocurrió un error al intentar cargar la información del juego.');
 			$("#subcategories").remove();
 			$("#categories").remove();
 			$("#divGameTitle").remove();
-			$(".loading-leaderboard-img").remove();
 			console.log('error al cargar la info del juego');
 			console.log(err);
 			if(err.responseJSON)
@@ -109,12 +110,18 @@ async function loadCategories(json) {
 	});
 }
 
+function errorLoadingRuns(message) {
+	$("#loadingLeaderboard").remove();
+	$(".loading-leaderboard-img").remove();
+	$("#loadingLeaderboardText").html(message);
+}
+
 async function createSubcategories(categoryID) {
 	let apiURL = `${SPEEDRUN_API}/categories/${categoryID}/variables`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			let variables = apiAnswer.data
-			console.log(apiAnswer);
+			// console.log(apiAnswer);
 			let hasSubcategories = false;
 			variables.forEach(variable => {
 				// en teoria ya carga solo las variables buenas, no se necesita checar el scope
@@ -168,10 +175,11 @@ async function createSubcategories(categoryID) {
 		})
 		.fail(err => {
 			finished = true;
-			$("#loadingLeaderboardText").html('Ocurrió un error al intentar cargar las subcategorías del juego.');
-			$("#loadingLeaderboard").remove();
+			// $("#loadingLeaderboardText").html('Ocurrió un error al intentar cargar las subcategorías del juego.');
+			// $("#loadingLeaderboard").remove();
+			// $(".loading-leaderboard-img").remove();
+			errorLoadingRuns('Ocurrió un error al intentar cargar las subcategorías del juego.');
 			$("#subcategories").remove();
-			$(".loading-leaderboard-img").remove();
 			console.log('error al cargar las subcategorias del juego');
 			console.log(err);
 			if(err.responseJSON)
@@ -257,9 +265,10 @@ async function createSubcategories(categoryID) {
 // 			if(runnersArray.length > 0)
 // 				runsDiv.removeChild(runsDivLoading);
 // 			else {
-// 				$("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
-// 				$("#loadingLeaderboard").remove();
-// 				$(".loading-leaderboard-img").remove();
+// // 				$("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
+// // 				$("#loadingLeaderboard").remove();
+// // 				$(".loading-leaderboard-img").remove();
+//				errorLoadingRuns(`Por ahora no hay ninguna run hispana en esta sección.`);
 // 			}
 
 // 			document.title = `${$("#divGameTitle").html()} - ${leaderboard.subcategory.label}`;
@@ -268,9 +277,10 @@ async function createSubcategories(categoryID) {
 // 		.fail(err => {
 // 			finished = true;
 // 			console.log('error al cargar la leaderboard');
-// 			$("#loadingLeaderboardText").text('Error al cargar la leaderboard, culpa de Luizón.');
-// 			$("#loadingLeaderboard").remove();
-// 			$(".loading-leaderboard-img").remove();
+// // 			$("#loadingLeaderboardText").text('Error al cargar la leaderboard, culpa de Luizón.');
+// // 			$("#loadingLeaderboard").remove();
+// // 			$(".loading-leaderboard-img").remove();
+//			errorLoadingRuns('Error al cargar la leaderboard, culpa de Luizón.');
 // 			console.log(err);
 // 			console.log(leaderboard.category.ID)
 // 			if(err.responseJSON) {
@@ -325,26 +335,52 @@ async function createRunBars(json) {
 	let apiV1URL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
 	let apiV2URL = `${SPEEDRUN_API_V2}/GetGameLeaderboard?_r=${encode64(json.game, json.category)}`;
 
-	console.log(apiV2URL);
+	// console.log(apiV2URL);
+
+	let salir = false;
 	
-	await loadPlayers(apiV2URL);
+	await loadPlayers(apiV2URL)
+		.catch(err => {
+			console.log(err);
+			salir = true;
+		});
+	if(salir)
+		return false;
 
 	if(leaderboard.subcategory.key) { // subcategorias
 		apiV1URL+= "?var-";
 		apiV1URL+= `${leaderboard.subcategory.key}=${leaderboard.subcategory.ID}`;
 	}
 	if(urlParams.has("top")) {
-		await loadRuns(apiV1URL, urlParams.get("top")); // limite puesto por usuario
+		await loadRuns(apiV1URL, urlParams.get("top"))
+			.catch(err => { // limite puesto por usuario
+				console.log(err);
+				salir = true;
+			});
+		if(salir)
+			return false;
 	}
 	else {
-		await loadRuns(apiV1URL, DEFAULT_LIMIT); // limite por defecto
+		await loadRuns(apiV1URL, DEFAULT_LIMIT)
+			.catch(err => { // limite por defecto
+				console.log(err);
+				salir = true;
+			});
+		if(salir)
+			return false;
 		runsArray.forEach((runner, i) => {
 			new RunBar(runner);
 		});
 		if(DEFAULT_LIMIT < playersArray.length) {
 			$("#loadingLeaderboardText").html("Se está cargando el resto de posiciones. Por favor espere.");
 		}
-		await loadRuns(apiV1URL); // carga todas las runs
+		await loadRuns(apiV1URL)
+			.catch(err => { // carga todas las runs
+				console.log(err);
+				salir = true;
+			});
+		if(salir)
+			return false;
 	}
 	runsArray.forEach((runner, i) => {
 		// si son menos runs que DEFAULT_LIMIT, aqui no va a entrar a menos que se haya puesto un tope desde url
@@ -355,9 +391,10 @@ async function createRunBars(json) {
 	if($("#obj2")[0] != undefined) // obj2 es el primer puesto en la leaderboard. obj1 es el encabezado de la tabla
 		runsDiv.removeChild(runsDivLoading);
 	else {
-		$("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
-		$("#loadingLeaderboard").remove();
-		$(".loading-leaderboard-img").remove();
+		// $("#loadingLeaderboardText").text(`Por ahora no hay ninguna run hispana en esta sección.`);
+		// $("#loadingLeaderboard").remove();
+		// $(".loading-leaderboard-img").remove();
+		errorLoadingRuns(`Por ahora no hay ninguna run hispana en esta sección.`);
 	}
 
 
@@ -372,9 +409,10 @@ async function loadRuns(apiURL, limite = false) {
 			apiURL+= "?";
 		apiURL+=`top=${limite}`;
 	}
+	let runsLoaded = false;
 	await $.get(apiURL)
 		.done(apiAnswer => {
-			console.log(apiAnswer)
+			// console.log(apiAnswer)
 			let runs = apiAnswer.data.runs;
 			runsArray = [];
 			runs.forEach(async (run, i) => {
@@ -409,13 +447,15 @@ async function loadRuns(apiURL, limite = false) {
 			});
 
 			finished = true;
+			runsLoaded = true;
 		})
 		.fail(err => {
 			finished = true;
 			console.log('error al cargar la leaderboard');
-			$("#loadingLeaderboardText").text('Error al cargar la leaderboard, culpa de Luizón.');
-			$("#loadingLeaderboard").remove();
-			$(".loading-leaderboard-img").remove();
+			// $("#loadingLeaderboardText").text('Error al cargar la leaderboard, culpa de Luizón.');
+			// $("#loadingLeaderboard").remove();
+			// $(".loading-leaderboard-img").remove();
+			errorLoadingRuns('Error al cargar la leaderboard, culpa de Luizón.');
 			console.log(err);
 			console.log(leaderboard.category.ID)
 			if(err.responseJSON) {
@@ -445,29 +485,50 @@ async function loadRuns(apiURL, limite = false) {
 					+ `<br><br>Si el problema persiste <a href="../leaderboard/${newParams}" class="hyperlink dark">intenta cargar menos información en este link.</a>`
 				);
 			}
+			runsLoaded = false;
 		});
+
+	return runsLoaded;
 }
 
 async function loadPlayers(apiURLV2) {
+	let playersLoaded = false;
+	console.log(apiURLV2);
 	await $.get(apiURLV2)
 		.done(apiAnswer => {
-			console.log(apiAnswer)
+			console.log('buena po')
 			apiAnswer.leaderboard.players.forEach(player => {
 				playersArray.push({
 					areaId : player.areaId,
 					name: player.name
 				});
 			});
+			playersLoaded = true;
 		})
 		.fail(err => {
 			finished = true;
 			console.log('error al cargar a los runners');
-			bootbox.message({
+			console.log(err);
+			bootbox.alert({
 				title: 'Error',
 				message: 'No se cargaron los runners de forma correcta.'
-						+ '<br>Culpa de Luizón.'
+				+ '<br>Culpa de Luizón.',
+				buttons: {
+					ok: {
+						label: 'Aceptar',
+					},
+				},
 			});
+
+			errorLoadingRuns("Error al cargar a los runners.");
+			$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
+				+ "<br><br><h2 style='text-align: left;font-weight: normal;'>ggshermano.</h2>"
+				+ `<br><br><h6>Se está trabajando en solucionar este error para que no se repita.`
+				+ `<br>Intenta recargar la página, a veces funciona.</h6>`
+			);
+			playersLoaded = false;
 		});
+	return playersLoaded;
 }
 
 window.onload = async function() {
@@ -488,14 +549,30 @@ window.onload = async function() {
 			+ "<br>Puedes usarla para ver runners hispanos de otros juegos, pero ten en cuenta que el discord que saldrá será el angloparlante y que podría haber algún problema no previsto con las subcategorías."
 		);
 
+	let salir = false;
+
 	document.title = `${urlParams.get('juego')} | Cargando informacion`;
 	runsDiv = document.getElementById("divRunBars");
 	runsDivLoading = document.getElementById("divRunBarsLoading");
-	await loadCategories({ game : urlParams.get('juego') }); // carga categorias y titulo del juego
-	await createSubcategories( leaderboard.category.ID ); // carga subcategorias
-	let vars = null;
-	if(leaderboard.subcategory.ID)
-		vars = leaderboard.subcategory;
+	await loadCategories({ game : urlParams.get('juego') }) // carga categorias y titulo del juego
+		.catch( err=> {
+			console.log(err);
+			salir = true;
+		});
+	if(salir)
+		return false;
+	await createSubcategories( leaderboard.category.ID ) // carga subcategorias
+		.catch( err=> {
+			console.log(err);
+			salir = true;
+		});
+	if(salir)
+		return false;
+
+	// estas 3 lineas no hacen nada, sus
+	// let vars = null;
+	// if(leaderboard.subcategory.ID)
+	// 	vars = leaderboard.subcategory;
 	createRunBars({ // carga la leaderboard como tal
 		game : leaderboard.game.ID,
 		category : leaderboard.category.ID

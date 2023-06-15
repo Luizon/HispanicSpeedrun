@@ -60,3 +60,15 @@ function contactanos() {
         + "<br>Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink dark' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
   });
 }
+
+
+bootbox.alert({
+  title: "Contáctanos",
+  onEscape : true,
+  message: "SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores",
+  buttons: {
+    ok: {
+      label: 'Aceptar',
+    },
+  },
+});
