@@ -62,13 +62,4 @@ function contactanos() {
 }
 
 
-bootbox.alert({
-  title: "Contáctanos",
-  onEscape : true,
-  message: "SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores",
-  buttons: {
-    ok: {
-      label: 'Aceptar',
-    },
-  },
-});
+alert("SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores");
