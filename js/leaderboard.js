@@ -324,7 +324,8 @@ function encode64(gameId, categoryId) {
 			{"variableId":"varId","valueIds":["valId"]},{"variableId":"varId","valueIds":["valId","val2Id"]},{"variableId":"varId","valueIds":["valId"]}
 		*/
 	}
-	let rawJson = `{"params":{"gameId":"${gameId}","categoryId":"${categoryId}","values":[${variables}],"emulator":1},"page":1,"vary":1686768609}`;
+	// let rawJson = `{"params":{"gameId":"${gameId}","categoryId":"${categoryId}","values":[${variables}],"emulator":1},"page":1,"vary":1686768609}`; // genera error
+	let rawJson = `{"params":{"gameId":"${gameId}","categoryId":"${categoryId}","values":[${variables}],"timer":0,"regionIds":[],"platformIds":[],"emulator":1,"video":0,"obsolete":0},"page":1,"vary":1686768609}`;
 	
 	let output = btoa(rawJson);
 	output = output.replace(/=/g, "");

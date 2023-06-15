@@ -62,4 +62,4 @@ function contactanos() {
 }
 
 
-alert("SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores");
+// alert("SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores");
