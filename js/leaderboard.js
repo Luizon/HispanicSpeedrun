@@ -210,21 +210,35 @@ async function createSubcategories(categoryID) {
 
 // API v1, carga demasiado lento
 async function createRunBars(json) {
-	let hPosition = 1;
+	// let hPosition = 1;
 	let apiURL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
 	apiURL+= "?embed=players"; // info extra para mostrar
-	if(urlParams.has("top"))
-		apiURL+= "&top=" + urlParams.get("top"); // limite
 	if(leaderboard.subcategory.key) { // subcategorias
 		apiURL+= "&var-";
 		apiURL+= `${leaderboard.subcategory.key}=${leaderboard.subcategory.ID}`;
 	}
+	if(urlParams.has("top")) {
+		await insertRunBarsV1(apiURL, urlParams.get("top")); // limite definido por jugador
+	}
+	else {
+		await insertRunBarsV1(apiURL, DEFAULT_LIMIT); // limite definido por jugador
+		await insertRunBarsV1(apiURL); // limite definido por jugador
+	}
+}
+
+async function insertRunBarsV1(apiURL, top = false){
+	if(top)
+		apiURL+= "&top=" + top;
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			console.log(apiAnswer)
 			let runs = apiAnswer.data.runs;
 			let players = apiAnswer.data.players;
+			runnersArray = [];
 			runs.forEach(async (run, i) => {
+				if(!top)
+					if(i < DEFAULT_LIMIT) // que no se inserten runners que ya se insertaron anteriormente
+						return false;
 				if(players.data[i].location == null) // hay runners que no tienen su pais puesto
 					return false; // estos runners se omiten
 				let runnersCountry = players.data[i].location.country.names.international;
@@ -257,10 +271,13 @@ async function createRunBars(json) {
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				}));
 			});
-			if(runnersArray.length > 0)
+			if(runnersArray.length > 0 && (!top || urlParams.has("top")))
 				runsDiv.removeChild(runsDivLoading);
-			else {
+			else if(!top || urlParams.has("top")) {
 				errorLoadingRuns(`Por ahora no hay ninguna run hispana en esta sección.`);
+			}
+			else {
+				$("#loadingLeaderboard").html("<h5>Cargando el resto de runs, por favor espere...</h5>"+ $("#loadingLeaderboardText").html());
 			}
 
 			document.title = `${$("#divGameTitle").html()} - ${leaderboard.subcategory.label}`;
@@ -300,7 +317,7 @@ async function createRunBars(json) {
 				);
 			}
 	});
-}
+};
 
 // function encode64(gameId, categoryId) {
 // 	// se asume que si hay subcaegoria, esto generara error en leaderboards sin subcategoria
