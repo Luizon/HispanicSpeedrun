@@ -3,8 +3,8 @@ import { formatTime } from "./functions.js"
 
 var runnersArray = []; // se usa solo en la funcion "legacy" de createRunBars con API v1
 var hPosition = 1;
-var runsArray = []; // array de runs
-var playersArray = []; // array de jugadores
+var runsArray = []; // array de runs (para cargar con api v2)
+var playersArray = []; // array de jugadores (para cargar con api v2)
 var runsDiv = null, runsDivLoading = null;
 var leaderboard = {
 	game : {
@@ -221,8 +221,8 @@ async function createRunBars(json) {
 		await insertRunBarsV1(apiURL, urlParams.get("top")); // limite definido por jugador
 	}
 	else {
-		await insertRunBarsV1(apiURL, DEFAULT_LIMIT); // limite definido por jugador
-		await insertRunBarsV1(apiURL); // limite definido por jugador
+		await insertRunBarsV1(apiURL, DEFAULT_LIMIT); // limite por defecto
+		await insertRunBarsV1(apiURL); // carga todo lo que falta
 	}
 }
 
@@ -271,7 +271,7 @@ async function insertRunBarsV1(apiURL, top = false){
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				}));
 			});
-			if(runnersArray.length > 0 && (!top || urlParams.has("top")))
+			if(runnersArray.length > 0 && (!top || urlParams.has("top")) || (!top && runnersArray.length <= DEFAULT_LIMIT))
 				runsDiv.removeChild(runsDivLoading);
 			else if(!top || urlParams.has("top")) {
 				errorLoadingRuns(`Por ahora no hay ninguna run hispana en esta sección.`);
