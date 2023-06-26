@@ -38,6 +38,12 @@ async function luizonShouldOptimizeThisWebPage() {
 function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+function getSubcategory() {
+	if(urlParams.has("subcategoria"))
+		return urlParams.get("subcategoria");
+	return "";
+}
   
 async function loadCategories(json) {
 	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories`;
@@ -62,15 +68,17 @@ async function loadCategories(json) {
 			leaderboard.category.name = null;
 			leaderboard.category.ID = null;
 			$("#categories").html("");
-			apiAnswer.data.categories.data.forEach((iCategory, i) => {
+			let idCounter = 0;
+			apiAnswer.data.categories.data.forEach((iCategory) => {
 				if(iCategory.type == "per-level")
 					return false;
 				categories.push(iCategory);
 				let categoryNode = document.createElement("a");
 				categoryNode.innerHTML = iCategory.name;
 				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
-				categoryNode.id = "btnCa"+i;
-				categoryNode.href = `../leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
+				categoryNode.id = "btnCa" + idCounter++;
+				let url = `../leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
+				categoryNode.href = `javascript:redirectTo("${url}", "${getSubcategory()}");`;
 				if(urlParams.has('categoria'))
 					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
 						leaderboard.category.name = iCategory.name;

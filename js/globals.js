@@ -1,3 +1,10 @@
+function redirectTo(url, variable) { // BUENA PO
+	if(variable)
+		window.location.href = `${url}&subcategoria=${variable}`;
+	else
+		window.location.href = `${url}`;
+}
+
 // top 4 img
 var topImg = {
     1 : null,
