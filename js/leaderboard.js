@@ -62,14 +62,15 @@ async function loadCategories(json) {
 			leaderboard.category.name = null;
 			leaderboard.category.ID = null;
 			$("#categories").html("");
-			apiAnswer.data.categories.data.forEach((iCategory, i) => {
+			let idCounter = 0;
+			apiAnswer.data.categories.data.forEach((iCategory) => {
 				if(iCategory.type == "per-level")
 					return false;
 				categories.push(iCategory);
 				let categoryNode = document.createElement("a");
 				categoryNode.innerHTML = iCategory.name;
 				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
-				categoryNode.id = "btnCa"+i;
+				categoryNode.id = "btnCa" + idCounter++;
 				categoryNode.href = `../leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
 				if(urlParams.has('categoria'))
 					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
