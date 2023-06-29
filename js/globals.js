@@ -1,5 +1,3 @@
-var subcategoriesString = "";
-
 function getSubcategories(json = {}) {
 	if(subcategoriesString.length == 0) // no hay subcategorias
 		return "";
@@ -100,3 +98,6 @@ const LINKS = {
     'ñ_sm64' : `${hostname}/leaderboard?juego=sm64`,
     'ñ_index' : `${hostname}`,
 }
+
+// GLOBALS
+var subcategoriesString = "";
