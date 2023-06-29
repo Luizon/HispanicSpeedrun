@@ -1,6 +1,29 @@
+var subcategoriesString = "";
+
+function getSubcategories(json = {}) {
+	if(subcategoriesString.length == 0) // no hay subcategorias
+		return "";
+	let output = "";
+	let subcategoryName = json.name || false;
+	let subcategoryValue = json.label || false;
+
+    subcategories = subcategoriesString.split(",");
+    subcategories.forEach( subcategory => {
+        subcategory = subcategory.split("@");
+        output+= subcategory[0] + "@";
+        if(subcategoryName && subcategory[0].toLowerCase() == subcategoryName.toLowerCase())
+            output+= subcategoryValue + ",";
+        else
+            output+= subcategory[1] + ",";
+    });
+    output = output.substring(0, output.length - 1);
+
+    return output;
+}
+
 function redirectTo(url, variable) { // BUENA PO
 	if(variable)
-		window.location.href = `${url}&subcategoria=${variable}`;
+		window.location.href = `${url}&subcategorias=${variable}`;
 	else
 		window.location.href = `${url}`;
 }
