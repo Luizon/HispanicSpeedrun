@@ -27,8 +27,9 @@ export class HTML_POJO {
                 + "<br>No se supone que seas capaz de ver esto en la página.");
     }
 
-    div(json = {class_:'', innerHTML:''}) {
-        let div = `<div class="${json.class_}"`;
+    div(json) {
+        let class_ = json.class_ || '';
+        let div = `<div class="${class_}"`;
         if(json.id != undefined)
             div+= ` id="${json.id}"`
         return div + `>${json.innerHTML}</div>`;
