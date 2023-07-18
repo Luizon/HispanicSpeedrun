@@ -1,4 +1,5 @@
 var subcategoriesString = "";
+activateTooltips(); // activa los tooltips agregados por html
 
 function getSubcategories(json = {}) {
 	if(subcategoriesString.length == 0) // no hay subcategorias
@@ -26,6 +27,20 @@ function redirectTo(url, variable) { // BUENA PO
 		window.location.href = `${url}&subcategorias=${variable}`;
 	else
 		window.location.href = `${url}`;
+}
+
+function activateTooltips() {
+    let tooltipTriggerList = Array.prototype.slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return activateTooltip(tooltipTriggerEl);
+    });
+}
+
+function activateTooltip(tooltipTrigerElement) {
+    if(tooltipTrigerElement.getAttribute("data-bs-html")) {
+        tooltipTrigerElement.title = tooltipTrigerElement.title.replace(/\n/g, "<br>");
+    }
+    return new bootstrap.Tooltip(tooltipTrigerElement);
 }
 
 // top 4 img
