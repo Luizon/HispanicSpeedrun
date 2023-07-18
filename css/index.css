@@ -22,7 +22,7 @@ footer {
     top: 100vh;
 }
 
-a:hover {
+a:hover, .comment-btn:hover {
     color: #a200ff
 }
 
@@ -45,13 +45,13 @@ a:hover {
 }
 
 .run-bar-position {
-    min-width: 34px;
+    min-width: 40px;
     max-width: 40px;
 }
 
-.run-bar-country {
+/*.run-bar-country { en desuso
     min-width: 100px;
-}
+}*/
 
 .run-bar-runner{
     font-weight: bold;
@@ -65,14 +65,14 @@ a:hover {
 
 .run-bar-time {
     text-align: end;
-    min-width: 140px;
-    max-width: 150px;
+    min-width: 110px;
+    max-width: 110px;
 }
 
 .run-bar-date {
     text-align: center;
     min-width: 120px;
-    max-width: 130px;
+    max-width: 120px;
     white-space: break-spaces;
 }
 
@@ -85,7 +85,8 @@ a:hover {
 
 .category-list, .run-bar {
     list-style-type: none;
-    padding: 0;
+    margin: 1.5px 0px;
+    padding: 0px;
 }
 
 .category-list li {
@@ -177,4 +178,30 @@ a.hyperlink.dark {
 .position-img {
     width: 20px;
     height: 20px;
+}
+
+.float-right {
+    float: right;
+}
+
+.float-left {
+    float: left;
+    padding-top: 2px;
+}
+
+.comment-img {
+    width: 100%;
+    position: relative;
+    top: -4px;
+}
+
+.comment-btn {
+    width: 1.5em;
+    height: 1.5em;
+    padding: 1px 3px;
+    position: relative;
+}
+
+.run-bar > a > .col {
+    padding: 2px 0px;
 }

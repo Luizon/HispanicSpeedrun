@@ -297,7 +297,8 @@ async function insertRunBarsV1(apiURL, top = false) {
 					subcategory : variables || '',
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				}));
-				activateTooltip($(`#obj${hPosition}`)[0].firstChild);
+				if(run.run.comment)
+					activateTooltip($(`#obj${hPosition} > .run-bar-runner > .row > button`)[0]);
 			});
 			if(runnersArray.length > 0 && (!top || urlParams.has("top")) || (!top && runnersArray.length <= DEFAULT_LIMIT))
 				runsDiv.removeChild(runsDivLoading);
@@ -405,4 +406,5 @@ window.onload = async function() {
 		game : leaderboard.game.ID,
 		category : leaderboard.category.ID
 	});
+	// activateTooltips();
 }
