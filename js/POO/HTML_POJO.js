@@ -37,14 +37,14 @@ export class HTML_POJO {
     a(json) {
         let class_ = json.class_ || '';
         let title = json.title || '';
-        return `<a title="${title}" class="${class_}" href="${json.url}">${json.innerHTML}</a>`;
+        return `<a data-bs-toggle="tooltip" data-bs-html="true" title="${title}" class="${class_}" href="${json.url}">${json.innerHTML}</a>`;
     }
     
     img(json) {
         let alt = json.alt == undefined ? "Sin imagen" : json.alt;
         let class_ = json.class_ || "";
         json.title = json.title || '';
-        return `<img class="${class_}" src="${json.src}" title="${json.title}" alt="${alt}"/>`;
+        return `<img class="${class_}" src="${json.src}" data-bs-toggle="tooltip" title="${json.title}" alt="${alt}"/>`;
     }
     
     p(json) {

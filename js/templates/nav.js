@@ -56,6 +56,10 @@ function contactanos() {
   bootbox.dialog({
     title: "Contáctanos",
     onEscape : true,
-    message: "Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink dark' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
+    message: "¡Hola! Soy Luizón, el creador de esta página Ñ 🤠"
+        + "<br>Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink dark' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
   });
 }
+
+
+// alert("SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores");
