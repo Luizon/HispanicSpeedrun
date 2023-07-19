@@ -10,20 +10,28 @@ navbarNode.innerHTML =
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="${LINKS.ñ_sm64}">Super Mario 64</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${LINKS.ñ_smo}">Super Mario Odyssey</a>
-      </li>
-      <li class="nav-item">
+  <ul class="navbar-nav">
+      `
+      // estos botones no son necesarios gracias al buscador de juegos
+      // <li class="nav-item">
+      //   <a class="nav-link" href="${LINKS.ñ_sm64}">Super Mario 64</a>
+      // </li>
+      // <li class="nav-item">
+      //   <a class="nav-link" href="${LINKS.ñ_smo}">Super Mario Odyssey</a>
+      // </li>
+      + `<li class="nav-item">
         <a class="nav-link" href="javascript:acercaDe()">Acerca de</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="javascript:contactanos()">Contáctanos</a>
       </li>
     </ul>
+    <div class="row ps-1 pe-1 m-0 me-lg-4 me-xl-4 pe-lg-2 pe-xl-2 justify-content-center justify-content-lg-end justify-content-xl-end" style="width: 100%;">
+      <input id="buscadorNav" class="form-control col-auto" type="search" placeholder="Buscar juego" aria-label="Search">
+      <button id="btnBuscadorNav" class="btn btn-outline-secondary col-auto">
+        <img src="../img/search.svg">
+      </button>
+    </div>
     <span class="navbar-text disabled d-none d-lg-flex fw-bolder fs-2 font-monospace" style="position: absolute; right: 16px; z-index: -1;">
       Ñ
     </span>
@@ -60,6 +68,15 @@ function contactanos() {
         + "<br>Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink dark' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
   });
 }
+
+$("#buscadorNav")[0].addEventListener("blur", e => {
+  $("#buscadorNav").removeClass("col");
+  $("#buscadorNav").addClass("col-auto");
+});
+$("#buscadorNav")[0].addEventListener("focus", e => {
+  $("#buscadorNav").removeClass("col-auto");
+  $("#buscadorNav").addClass("col");
+});
 
 
 // alert("SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores");

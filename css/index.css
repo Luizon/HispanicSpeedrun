@@ -205,3 +205,25 @@ a.hyperlink.dark {
 .run-bar > a > .col {
     padding: 2px 0px;
 }
+
+.nav-link {
+    white-space: nowrap;
+}
+
+#buscadorNav {
+    width: 130px;
+    height: 40px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+}
+
+#btnBuscadorNav {
+    width: 40px;
+}
+
+#btnBuscadorNav > img {
+    width: 22px;
+    position: relative;
+    top: -2px;
+    left: -4px;
+}
