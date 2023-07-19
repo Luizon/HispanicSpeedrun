@@ -38,8 +38,8 @@ async function loadCategories(json) {
 	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
-			// console.log(apiAnswer);
-			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri}')`; // background
+			console.log(apiAnswer);
+			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri.replace("gameasset", "static/game")}')`; // background
 			if($("#divDiscord")[0].href.length == 0) {
 				$("#divDiscord")[0].href = apiAnswer.data.discord;
 				$("#divDiscord")[0].title = `Comunidad angloparlante de ${apiAnswer.data.names.international}`;
@@ -53,6 +53,9 @@ async function loadCategories(json) {
 				topImg[3] = apiAnswer.data.assets["trophy-3rd"].uri;
 			if(apiAnswer.data.assets["trophy-4th"])
 				topImg[4] = apiAnswer.data.assets["trophy-4th"].uri;
+			for(let i=1; i <= 4; i++)
+				if(topImg[i])
+					topImg[i] = topImg[i].replace("themeasset", "static/theme");
 			leaderboard.game.ID = apiAnswer.data.id;
 			let categories = [];
 			leaderboard.category.name = null;
