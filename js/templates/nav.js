@@ -1,4 +1,5 @@
 let navbarNode = document.createElement('nav');
+let lastFocusedElement = null;
 navbarNode.classList = "navbar navbar-expand-lg navbar-dark bg-dark fixed-top";
 navbarNode.innerHTML = 
 `<span class="pt-0 pb-0 navbar-text disabled d-md-block d-lg-none fw-bolder fs-3 font-monospace" style="top: 0.43em; width: 100%; left: 0px; position: absolute; z-index: -1;">
@@ -29,7 +30,7 @@ navbarNode.innerHTML =
     <div class="row ps-1 pe-1 m-0 me-lg-4 me-xl-4 pe-lg-2 pe-xl-2 justify-content-center justify-content-lg-end justify-content-xl-end" style="width: 100%;">
       <input id="buscadorNav" class="form-control col-auto" type="search" placeholder="Buscar juego" aria-label="Search">
       <button id="btnBuscadorNav" class="btn btn-outline-secondary col-auto">
-        <img src="../img/search.svg">
+        <img src="https://speedruñ.com/img/search.svg">
       </button>
     </div>
     <span class="navbar-text disabled d-none d-lg-flex fw-bolder fs-2 font-monospace" style="position: absolute; right: 16px; z-index: -1;">
@@ -69,14 +70,23 @@ function contactanos() {
   });
 }
 
+$("#btnBuscadorNav")[0].addEventListener("blur", e => {
+  if(lastFocusedElement == $("#buscadorNav"))
+    lastFocusedElement = null;
+  console.log($("#buscadorNav").hasClass("col-auto"));
+});
+$("#btnBuscadorNav")[0].addEventListener("focus", e => {
+  lastFocusedElement = $(this);
+  console.log($("#buscadorNav").hasClass("col-auto"));
+});
+
 $("#buscadorNav")[0].addEventListener("blur", e => {
+  console.log("focus btn: " + $("#btnBuscadorNav").is(":focus"));
   $("#buscadorNav").removeClass("col");
   $("#buscadorNav").addClass("col-auto");
 });
 $("#buscadorNav")[0].addEventListener("focus", e => {
+  lastFocusedElement = $(this);
   $("#buscadorNav").removeClass("col-auto");
   $("#buscadorNav").addClass("col");
 });
-
-
-// alert("SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores");

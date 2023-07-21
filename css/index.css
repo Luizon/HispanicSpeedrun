@@ -42,6 +42,7 @@ a:hover, .comment-btn:hover {
 .run-bar > a {
     padding-top: 2px;
     padding-bottom: 2px;
+    text-decoration: none;
 }
 
 .run-bar-position {
@@ -200,6 +201,7 @@ a.hyperlink.dark {
     height: 1.5em;
     padding: 1px 3px;
     position: relative;
+    background-color: #0004;
 }
 
 .run-bar > a > .col {
@@ -226,4 +228,31 @@ a.hyperlink.dark {
     position: relative;
     top: -2px;
     left: -4px;
+}
+
+.coffee-btn {
+    position: fixed;
+    z-index: 100;
+    right: 1em;
+    bottom: 1em;
+    background: burlywood;
+}
+
+.coffee-btn:focus {
+    background: #c59a63;
+}
+.coffee-btn:hover {
+    background: #e5d1b7;
+}
+.coffee-btn:active {
+    background: #be8d4d;
+}
+
+.coffee-img {
+    height: 100%;
+}
+
+.coffee-container {
+    height: 2em;
+    white-space: nowrap;
 }
