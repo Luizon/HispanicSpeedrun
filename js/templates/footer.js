@@ -13,3 +13,5 @@ footerNode.innerHTML =
     </p>
 </div>`;
 document.querySelector("body").appendChild(footerNode);
+
+activateTooltips();

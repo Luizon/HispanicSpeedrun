@@ -77,6 +77,13 @@ a:hover, .comment-btn:hover {
     white-space: break-spaces;
 }
 
+.search-bar {
+    width: 100%;
+    margin-left: 0px;
+    font-size: .8em;
+    white-space: nowrap;
+}
+
 .row-even {
     background: #fff2;
 }
@@ -215,8 +222,13 @@ a.hyperlink.dark {
 #buscadorNav {
     width: 130px;
     height: 40px;
+    float: right; 
     -webkit-transition: width 0.4s ease-in-out;
     transition: width 0.4s ease-in-out;
+}
+
+#buscadorNav:focus, #buscadorNav:active {
+    width: 100%;
 }
 
 #btnBuscadorNav {
@@ -232,10 +244,20 @@ a.hyperlink.dark {
 
 .coffee-btn {
     position: fixed;
+    width: 3.5em;
     z-index: 100;
     right: 1em;
     bottom: 1em;
+    color: #0000;
     background: burlywood;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+    animation: buy-me-a-coffee 2s ease-in;
+}
+
+@keyframes buy-me-a-coffee {
+    0%, 80% { width: 14.5em; color: #222; }
+    100% { width: 3.5em;  color: #0000; }
 }
 
 .coffee-btn:focus {
@@ -255,4 +277,9 @@ a.hyperlink.dark {
 .coffee-container {
     height: 2em;
     white-space: nowrap;
+}
+
+.coffee-btn:hover, .coffee-btn:active, .coffee-btn:focus {
+    width: 14.5em;
+    color: #222;
 }

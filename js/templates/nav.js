@@ -28,7 +28,9 @@ navbarNode.innerHTML =
       </li>
     </ul>
     <div class="row ps-1 pe-1 m-0 me-lg-4 me-xl-4 pe-lg-2 pe-xl-2 justify-content-center justify-content-lg-end justify-content-xl-end" style="width: 100%;">
-      <input id="buscadorNav" class="form-control col-auto" type="search" placeholder="Buscar juego" aria-label="Search">
+      <div class="col p-0">
+        <input id="buscadorNav" class="form-control" type="search" placeholder="Buscar juego" aria-label="Search">
+      </div>
       <button id="btnBuscadorNav" class="btn btn-outline-secondary col-auto">
         <img src="https://speedruñ.com/img/search.svg">
       </button>
@@ -55,9 +57,9 @@ function acercaDe() {
   bootbox.dialog({
     title: "Acerca de",
     onEscape : true,
-    message: "Esta página fue creada sin fines de lucro, con el único propósito de documentar acerca de las posiciones mundiales de los speedrunners hispanohablantes."
-      + "<br>Es posible que encuentres jugadores que no sean hispanohablantes en las tablas o que no encuentres speedrunners que conozcas, esto es debido a que se filtra según la bandera del jugador. Si en speedrun.com no tiene colocado un país hispano entonces no se mostrará en las tablas de esta página."
-      + "<br><br>Por su puesto, esta página está sujeta a cambios."
+    message: "Esta página fue creada sin fines de lucro, con el único propósito de documentar acerca de las <b style='color: inherit;'>posiciones mundiales de los speedrunners hispanohablantes</b>."
+      + "<br>Es posible que encuentres jugadores que no sean hispanohablantes en las tablas o que no encuentres speedrunners que conozcas, esto es debido a que <b style='color: inherit;'>se filtra según la bandera del jugador</b>. Si en speedrun.com no tiene colocado un país hispano entonces no se mostrará en las tablas de esta página."
+      + "<br><br>¡SpeedruÑ.com seguirá mejorando!"
   });
 }
 
@@ -69,24 +71,3 @@ function contactanos() {
         + "<br>Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink dark' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
   });
 }
-
-$("#btnBuscadorNav")[0].addEventListener("blur", e => {
-  if(lastFocusedElement == $("#buscadorNav"))
-    lastFocusedElement = null;
-  console.log($("#buscadorNav").hasClass("col-auto"));
-});
-$("#btnBuscadorNav")[0].addEventListener("focus", e => {
-  lastFocusedElement = $(this);
-  console.log($("#buscadorNav").hasClass("col-auto"));
-});
-
-$("#buscadorNav")[0].addEventListener("blur", e => {
-  console.log("focus btn: " + $("#btnBuscadorNav").is(":focus"));
-  $("#buscadorNav").removeClass("col");
-  $("#buscadorNav").addClass("col-auto");
-});
-$("#buscadorNav")[0].addEventListener("focus", e => {
-  lastFocusedElement = $(this);
-  $("#buscadorNav").removeClass("col-auto");
-  $("#buscadorNav").addClass("col");
-});
