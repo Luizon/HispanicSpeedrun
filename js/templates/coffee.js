@@ -11,7 +11,7 @@ coffeeNode.addEventListener("click", evt => {
         title: "¡Muchas gracias por apoyar!",
         message: "Yo me encargaré de pagar el hosting y el dominio de la página, así como darle soporte. Mientras speedrun.com no me solicite que se elimine, speedruñ.com existirá ;)"
         + "<br>Eso no significa que no puedas <b style='color: inherit;'>motivarme a continuar</b> comprándome un cafécito 👀"
-        + "<br><br><a href='https://paypal.me/pluizon'>Este es mi Paypal para realizar transferencias directas ;)</a>",
+        + "<br><br><a href='https://paypal.me/pluizon'>Este es mi Paypal para transferencias directas ;)</a>",
         onEscape: true
     });
 });

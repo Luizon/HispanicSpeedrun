@@ -39,6 +39,10 @@ a:hover, .comment-btn:hover {
     white-space: nowrap;
 }
 
+.run-bar:hover {
+    background-color: #5b4369e0;
+}
+
 .run-bar > a {
     padding-top: 2px;
     padding-bottom: 2px;
@@ -79,9 +83,10 @@ a:hover, .comment-btn:hover {
 
 .search-bar {
     width: 100%;
+    height: 4em;
     margin-left: 0px;
     font-size: .8em;
-    white-space: nowrap;
+    overflow-y: hidden;
 }
 
 .row-even {
@@ -219,7 +224,7 @@ a.hyperlink.dark {
     white-space: nowrap;
 }
 
-#buscadorNav {
+#searcherNav {
     width: 130px;
     height: 40px;
     float: right; 
@@ -227,15 +232,15 @@ a.hyperlink.dark {
     transition: width 0.4s ease-in-out;
 }
 
-#buscadorNav:focus, #buscadorNav:active {
+#searcherNav:focus, #searcherNav:active {
     width: 100%;
 }
 
-#btnBuscadorNav {
+#btnSearcherNav {
     width: 40px;
 }
 
-#btnBuscadorNav > img {
+#btnSearcherNav > img {
     width: 22px;
     position: relative;
     top: -2px;
@@ -287,4 +292,35 @@ a.hyperlink.dark {
 
 .coffee-btn:hover, .coffee-btn:active, .coffee-btn:focus {
     width: 14.5em;
+}
+
+.search-bar-cover > img {
+    height: 45px;
+    margin-top: 5px;
+    border-radius: 4px
+}
+
+.search-bar > a {
+    text-decoration: none;
+}
+
+.search-bar-text {
+    padding-top: .4em;
+    font-size: 2em;
+}
+
+.search-bar-game {
+    white-space: nowrap;
+}
+
+.search-bar:hover {
+    background-color: #522f6f;
+}
+
+.search-games-container {
+    position: absolute;
+    top: inherit;
+    margin-top: 44px;
+    background: #210333;
+    padding: 0px;
 }

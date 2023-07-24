@@ -1,3 +1,8 @@
+export function getEnviroment() {
+    return "dev";
+    return "prod";
+}
+
 export function formatTime(totalSeconds) {
     let hours = Math.floor(totalSeconds / 3600);
     let minutes = Math.floor(totalSeconds / 60 % 60);
