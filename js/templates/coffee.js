@@ -2,7 +2,7 @@ let coffeeNode = document.createElement('button');
 coffeeNode.classList = "btn coffee-btn";
 coffeeNode.innerHTML = 
 `<div class="p-0 run-bar-runner coffee-container" style="color: inherit;">
-    <img src="http://localhost:64/HispanicSpeedrun/img/coffee.svg" style="color: inherit;" class="coffee-img me-2" alt=":)" title="Anda, hago esto gratis, pero igual aceptaré un café si me lo patrocinas ;)">
+    <img src="https://speedruñ.com/img/coffee.svg" style="color: inherit;" class="coffee-img me-2" alt=":)" title="Anda, hago esto gratis, pero igual aceptaré un café si me lo patrocinas ;)">
     <span id="coffeeBtnTxt">Cómprame un café :)</span>
 </div>`;
 
