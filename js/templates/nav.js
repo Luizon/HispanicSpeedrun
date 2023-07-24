@@ -46,9 +46,9 @@ function acercaDe() {
   bootbox.dialog({
     title: "Acerca de",
     onEscape : true,
-    message: "Esta página fue creada sin fines de lucro, con el único propósito de documentar acerca de las posiciones mundiales de los speedrunners hispanohablantes."
-      + "<br>Es posible que encuentres jugadores que no sean hispanohablantes en las tablas o que no encuentres speedrunners que conozcas, esto es debido a que se filtra según la bandera del jugador. Si en speedrun.com no tiene colocado un país hispano entonces no se mostrará en las tablas de esta página."
-      + "<br><br>Por su puesto, esta página está sujeta a cambios."
+    message: "Esta página fue creada sin fines de lucro, con el único propósito de documentar acerca de las <b style='color: inherit;'>posiciones mundiales de los speedrunners hispanohablantes</b>."
+      + "<br>Es posible que encuentres jugadores que no sean hispanohablantes en las tablas o que no encuentres speedrunners que conozcas, esto es debido a que <b style='color: inherit;'>se filtra según la bandera del jugador</b>. Si en speedrun.com no tiene colocado un país hispano entonces no se mostrará en las tablas de esta página."
+      + "<br><br>¡SpeedruÑ.com seguirá mejorando!"
   });
 }
 
@@ -60,6 +60,3 @@ function contactanos() {
         + "<br>Si deseas colaborar o quieres reportar un problema puedes contactarme en <a class='hyperlink dark' href='https://discord.gg/jjgDVGbySx'>mi server de discord.</a>"
   });
 }
-
-
-// alert("SpeedruÑ.com esta en mentenimiento actualmente, por lo que fácilmente puede ocurrir errores");

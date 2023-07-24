@@ -8,7 +8,7 @@ function getSubcategories(json = {}) {
 	let subcategoryName = json.name || false;
 	let subcategoryValue = json.label || false;
 
-    subcategories = subcategoriesString.split(",");
+    let subcategories = subcategoriesString.split(",");
     subcategories.forEach( subcategory => {
         subcategory = subcategory.split("@");
         output+= subcategory[0] + "@";

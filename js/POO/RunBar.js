@@ -26,14 +26,14 @@ export class RunBar extends HTML_POJO {
 					title : this.hPosition,
 					class_ : "position-img",
 				});
-			}
-			if(this.globalPosition < 5) {
-				if(topImg[this.globalPosition])
-					this.globalPosition = this.img({
-						src : topImg[this.globalPosition],
-						title : this.globalPosition,
-						class_ : "position-img",
-					});
+		}
+		if(this.globalPosition < 5) {
+			if(topImg[this.globalPosition])
+				this.globalPosition = this.img({
+					src : topImg[this.globalPosition],
+					title : this.globalPosition,
+					class_ : "position-img",
+				});
 		}
 
 		if(this.url)
@@ -41,7 +41,6 @@ export class RunBar extends HTML_POJO {
 		else
 			this.generateInnerHTMLHeader();
 		this.insertNode();
-		// this.updateHTML();
 	}
 
 	async upadateHTML() {
