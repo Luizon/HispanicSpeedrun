@@ -244,11 +244,12 @@ a.hyperlink.dark {
 
 .coffee-btn {
     position: fixed;
-    width: 3.5em;
+    width: 3.75em;
     z-index: 100;
     right: 1em;
     bottom: 1em;
-    color: #0000;
+    color: #222;
+  
     background: burlywood;
     -webkit-transition: width 0.4s ease-in-out;
     transition: width 0.4s ease-in-out;
@@ -256,8 +257,8 @@ a.hyperlink.dark {
 }
 
 @keyframes buy-me-a-coffee {
-    0%, 80% { width: 14.5em; color: #222; }
-    100% { width: 3.5em;  color: #0000; }
+    0%, 80% { width: 14.5em; }
+    100% { width: 3.75em; }
 }
 
 .coffee-btn:focus {
@@ -274,12 +275,16 @@ a.hyperlink.dark {
     height: 100%;
 }
 
+#coffeeBtnTxt {
+    color: inherit;
+}
+
 .coffee-container {
     height: 2em;
     white-space: nowrap;
+    overflow-x: clip;
 }
 
 .coffee-btn:hover, .coffee-btn:active, .coffee-btn:focus {
     width: 14.5em;
-    color: #222;
 }
