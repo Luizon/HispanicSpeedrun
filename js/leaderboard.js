@@ -1,5 +1,4 @@
 import { RunBar } from "./POO/RunBar.js";
-import { searcherNavListener } from "./SearchBox.js";
 import { formatTime, getEnviroment } from "./functions.js"
 
 var runnersArray = []; // se usa solo en la funcion "legacy" de createRunBars con API v1
@@ -383,7 +382,6 @@ function loadLessInformationMessage() {
 window.onload = async function() {
 	if(!urlParams.has('juego'))
 		window.location.href = "../";
-	searcherNavListener();
 	startedAt = new Date();
 	luizonShouldOptimizeThisWebPage();
 

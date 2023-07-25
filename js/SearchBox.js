@@ -1,7 +1,7 @@
 import { SearchBar } from "./POO/SearchBar.js";
 import { getEnviroment } from "./functions.js";
 
-export function searcherNavListener() {
+function searcherNavListener() {
     $("#searcherNav").on("focus", evt => {
         $(".search-games-container").width($("#searcherNavContainer").width());
         if($(".search-games-container").hasClass("d-none"))
@@ -118,3 +118,5 @@ function encodeSearch64(searchText) {
     output = output.replace(/=/g, "");
     return output;
 }
+
+searcherNavListener();
