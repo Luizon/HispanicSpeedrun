@@ -26,9 +26,14 @@ export function searcherNavListener() {
         hideContainer();
     });
     $("#btnSearcherNav").on("click", searchText );
+    $("#searcherNav, #btnSearcherNav").on("keydown", evt => {
+        if(evt.keyCode == 13) { // return
+            searchText();
+        }
+    } );
 }
 
-async function searchText(evt) {
+async function searchText() {
     let searchText = $("#searcherNav").val();
     if(searchText.trim().length == 0) {
         $(".search-games-container").html(
@@ -36,11 +41,12 @@ async function searchText(evt) {
         );
         return false;
     }
-    $(".search-games-container").html("");
+    $(".search-games-container").html("<span class='search-title-label'>Cargando...</span>");
 	let apiURL = `${SPEEDRUN_API_V2}/GetSearch?_r=${encodeSearch64(searchText)}`;
     console.log(apiURL)
 	await $.get(apiURL)
 		.done(apiAnswer => {
+            $(".search-games-container").html("");
 			if(getEnviroment() == "dev")
 				console.log(apiAnswer);
             if((apiAnswer.gameList.length + apiAnswer.userList.length) == 0) {
@@ -107,7 +113,7 @@ async function searchText(evt) {
 }
 
 function encodeSearch64(searchText) {
-    let rawJson = `{"query":"${searchText}","limit":10,"includeGames":true,"includeNews":false,"includePages":false,"includeSeries":false,"includeUsers":true}`;
+    let rawJson = `{"query":"${searchText}","limit":6,"includeGames":true,"includeNews":false,"includePages":false,"includeSeries":false,"includeUsers":true}`;
     let output = btoa(rawJson);
     output = output.replace(/=/g, "");
     return output;
