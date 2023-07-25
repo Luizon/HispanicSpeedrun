@@ -1,5 +1,6 @@
 import { RunBar } from "./POO/RunBar.js";
-import { formatTime } from "./functions.js"
+import { searcherNavListener } from "./SearchBox.js";
+import { formatTime, getEnviroment } from "./functions.js"
 
 var runnersArray = []; // se usa solo en la funcion "legacy" de createRunBars con API v1
 var hPosition = 1;
@@ -38,7 +39,8 @@ async function loadCategories(json) {
 	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
-			console.log(apiAnswer);
+			if(getEnviroment() == "dev")
+				console.log(apiAnswer);
 			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri.replace("gameasset", "static/game")}')`; // background
 			if($("#divDiscord")[0].href.length == 0) {
 				$("#divDiscord")[0].href = apiAnswer.data.discord;
@@ -121,7 +123,8 @@ async function loadSubcategories(categoryID) {
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			let variables = apiAnswer.data
-			// console.log(apiAnswer);
+			if(getEnviroment() == "dev")
+				console.log(apiAnswer);
 			let hasSubcategories = false;
 			let numberOfSubcategories = 0;
 			variables.forEach(variable => {
@@ -131,7 +134,8 @@ async function loadSubcategories(categoryID) {
 						$("#subcategories").append(document.createElement("br"));
 					}
 					numberOfSubcategories++;
-					console.log(variable);
+					if(getEnviroment() == "dev")
+						console.log(variable);
 					hasSubcategories = true;
 					let newSubcategory = {
 						key : variable.id,
@@ -152,7 +156,8 @@ async function loadSubcategories(categoryID) {
 							subcategories.forEach( subcategory => {
 								subcategory = subcategory.split("@");
 								if(subcategory[0] == iSubcategoryName && subcategory[1] == iSubcategoryLabel.toLowerCase()) {
-									console.log(subcategory)
+									if(getEnviroment() == "dev")
+										console.log(subcategory)
 									subcategoryKey = iSubcategoryKey;
 									subcategoryNode.classList.add("btn-active");
 									subcategoryLabel = iSubcategoryLabel;
@@ -214,7 +219,8 @@ async function loadSubcategories(categoryID) {
 				}
 		});
 	
-	console.log(leaderboard.variables)
+	if(getEnviroment() == "dev")
+		console.log(leaderboard.variables)
 	let variables = "";
 	for(let iVariable in leaderboard.variables) {
 		variables+= `${leaderboard.variables[iVariable].name}, `;
@@ -245,8 +251,11 @@ async function createRunBars(json) {
 			apiURL+= `&var-${subcategory.key}=${subcategory.ID}`;
 		});
 	}
-	console.log(leaderboard.subcategories)
-	console.log(apiURL);
+	if(getEnviroment() == "dev")
+		console.log(leaderboard.subcategories)
+	if(getEnviroment() == "dev")
+		console.log(apiURL);
+
 	if(urlParams.has("top")) {
 		await insertRunBarsV1(apiURL, urlParams.get("top")); // limite definido por jugador
 	}
@@ -261,7 +270,8 @@ async function insertRunBarsV1(apiURL, top = false) {
 		apiURL+= "&top=" + top;
 	await $.get(apiURL)
 		.done(apiAnswer => {
-			console.log(apiAnswer)
+			if(getEnviroment() == "dev")
+				console.log(apiAnswer)
 			let runs = apiAnswer.data.runs;
 			let players = apiAnswer.data.players;
 			runnersArray = [];
@@ -286,7 +296,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 				if(variables)
 					variables = variables.substring(0, variables.length - 2); // quita el ", " del final
 
-				runnersArray.push(new RunBar({
+				let newRunBar = new RunBar({
 					hPosition : hPosition++,
 					globalPosition : run.place,
 					countryCode : players.data[i].location.country.code,
@@ -299,9 +309,10 @@ async function insertRunBarsV1(apiURL, top = false) {
 					parentNode: runsDiv,
 					subcategory : variables || '',
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
-				}));
+				});
+				runnersArray.push(newRunBar);
 				if(run.run.comment)
-					activateTooltip($(`#obj${hPosition} > .run-bar-runner > .row > button`)[0]);
+					activateTooltip($(`#${newRunBar.id} > .run-bar-runner > .row > button`)[0]);
 			});
 			if(runnersArray.length > 0 && (!top || urlParams.has("top")) || (!top && runnersArray.length <= DEFAULT_LIMIT))
 				runsDiv.removeChild(runsDivLoading);
@@ -372,8 +383,33 @@ function loadLessInformationMessage() {
 window.onload = async function() {
 	if(!urlParams.has('juego'))
 		window.location.href = "../";
+	searcherNavListener();
 	startedAt = new Date();
 	luizonShouldOptimizeThisWebPage();
+
+	if(getEnviroment() == "prod") {
+		console.log('%c ALTO AHÍ ', 'background: #FFFF00 ; color: #ff0000 ; font-size: 40px; font-weight: bold;');
+		console.log('%cEsta consola es exclusiva para desarollo. No escribas ni pegues ningún código que no entiendas.', 'font-size: 20px;');
+		console.log(`
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⡾⣻⣿⣿⣿⣿⣯⣍⠛⠻⢷⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⠟⢁⣾⠟⠋⣁⣀⣤⡉⠻⣷⡀⠀⠙⢿⣷⣄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⣰⣿⠏⠀⠀⢸⣿⠀⠼⢋⣉⣈⡳⢀⣿⠃⠀⠀⠀⠙⣿⣦⡀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⢰⡿⠿⣷⡀⠀⠀⠀⣼⣿⠃⠀⠀⣀⣤⡿⠟⠛⠋⠉⠉⠙⢛⣻⠶⣦⣄⡀⠀⠘⣿⣷⡀⠀⠀⠀
+⢠⣾⠟⠳⣦⣄⢸⡇⠀⠈⣷⡀⠀⣼⣿⡏⢀⣤⡾⢋⣵⠿⠻⢿⠋⠉⠉⢻⠟⠛⠻⣦⣝⠻⣷⣄⠸⣿⣿⠀⠀⠀
+⠘⣧⠀⠀⠀⠙⢿⣿⠀⠀⢸⣷⠀⣿⣿⣧⣾⣏⡴⠛⢡⠖⢛⣲⣅⠀⠀⣴⣋⡉⠳⡄⠈⠳⢬⣿⣿⣿⡿⠀⠀⠀
+⠀⠘⠷⣤⣀⣀⣀⣽⡶⠛⠛⠛⢷⣿⣿⣿⣿⣏⠀⠀⡏⢰⡿⢿⣿⠀⠀⣿⠻⣿⠀⡷⠀⣠⣾⣿⡿⠛⠷⣦⠀⠀
+⠀⠀⢀⣾⠟⠉⠙⣿⣤⣄⠀⢀⣾⠉⠀⢹⣿⣿⣷⠀⠹⡘⣷⠾⠛⠋⠉⠛⠻⢿⡴⢃⣄⣻⣿⣿⣷⠀⠀⢹⡇⠀
+⠀⠀⢸⡇⠈⠉⠛⢦⣿⡏⠀⢸⣧⠀⠈⠻⣿⡿⢣⣾⣦⣽⠃⠀⠀⠀⠀⠀⠀⠀⣷⣾⣿⡇⠉⢿⡇⠀⢀⣼⠇⠀
+⠀⠀⠘⣷⡠⣄⣀⣼⠇⠀⠀⠀⠻⣷⣤⣀⣸⡇⠀⠹⣿⣿⣦⣀⠀⠀⠀⠀⢀⣴⣿⣿⡟⠀⠀⢸⣷⣾⡿⠃⠀⠀
+⠀⠀⠀⠈⠻⢦⣍⣀⣀⣀⡄⠀⣰⣿⡿⠿⢿⣇⠀⠀⠉⠛⠻⣿⣿⡷⠾⣿⣿⡿⠉⠁⠀⠀⢀⣾⠋⠁⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠈⠉⠉⠙⠿⢿⣿⣇⠀⠀⠈⢿⣧⣄⠀⠀⠀⢹⣷⣶⣶⣾⣿⡇⠀⠀⣀⣴⡿⣧⣄⡀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣷⡀⠀⠀⠙⢿⣿⣶⣤⡀⠻⢤⣀⡤⠞⢀⣴⣿⣿⠟⢷⡀⠙⠻⣦⣄⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢻⣦⠀⢠⡟⠁⠙⢻⣿⠷⠶⣶⠶⠾⠛⠙⣿⠇⠀⠀⢻⡄⠀⠀⠙⢷⡀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⡀⣿⠁⣤⣤⡄⢻⡶⠶⠛⠛⠛⠛⠛⣿⢠⣾⣷⣆⢻⡀⠀⠀⠈⣷
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⢸⣿⣿⣿⡈⢿⡀⠀⠀⠀⠀⠀⡿⢸⣿⣿⣿⢸⡇⠀⠀⠀⡟`);
+		console.log("¡Disfruta la página!")
+	}
+
 	if(urlParams.get("juego").toLowerCase() == 'sm64') {
 		$("#divDiscord")[0].href = "https://discord.gg/2Vx5DeJvQP";
 		$("#divDiscord")[0].title = "Comunidad Ñ de Super Mario 64";

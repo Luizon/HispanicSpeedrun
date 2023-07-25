@@ -1,4 +1,5 @@
 let navbarNode = document.createElement('nav');
+let lastFocusedElement = null;
 navbarNode.classList = "navbar navbar-expand-lg navbar-dark bg-dark fixed-top";
 navbarNode.innerHTML = 
 `<span class="pt-0 pb-0 navbar-text disabled d-md-block d-lg-none fw-bolder fs-3 font-monospace" style="top: 0.43em; width: 100%; left: 0px; position: absolute; z-index: -1;">
@@ -10,13 +11,7 @@ navbarNode.innerHTML =
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="${LINKS.ñ_sm64}">Super Mario 64</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="${LINKS.ñ_smo}">Super Mario Odyssey</a>
-      </li>
+  <ul class="navbar-nav">
       <li class="nav-item">
         <a class="nav-link" href="javascript:acercaDe()">Acerca de</a>
       </li>
@@ -24,6 +19,17 @@ navbarNode.innerHTML =
         <a class="nav-link" href="javascript:contactanos()">Contáctanos</a>
       </li>
     </ul>
+    <div id="searcherNavContainer" class="row ps-1 pe-1 m-0 me-lg-4 me-xl-4 pe-lg-2 pe-xl-2 justify-content-center justify-content-lg-end justify-content-xl-end" style="width: 100%;">
+      <div class="col p-0">
+        <input id="searcherNav" class="form-control" type="search" placeholder="Buscar juego" aria-label="Search">
+      </div>
+      <button id="btnSearcherNav" class="btn btn-outline-secondary col-auto">
+        <img src="https://speedruñ.com/img/search.svg">
+      </button>
+      <div class="search-games-container d-none">
+        <span class='search-title-label'>Presiona el botón para buscar</span>
+      </div>
+    </div>
     <span class="navbar-text disabled d-none d-lg-flex fw-bolder fs-2 font-monospace" style="position: absolute; right: 16px; z-index: -1;">
       Ñ
     </span>
@@ -41,6 +47,9 @@ divDesarrollando.style = "padding-top: 4em;";
 // divDesarrollando.innerHTML = 'Esta página actualmente está en desarrollo y en fase de pruebas.';
 document.querySelector("body").appendChild(divDesarrollando);
 
+$("#btnSearcherNav").on("click", evt => {
+  $("#searcherNav").focus();
+});
 
 function acercaDe() {
   bootbox.dialog({

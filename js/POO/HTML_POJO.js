@@ -1,6 +1,6 @@
 export class HTML_POJO {
     constructor(json) {
-        this.id = `obj${++objCounter}`;
+        this.id = json.id || `obj${++objCounter}`;
         this.innerHTML = json.innerHTML || "";
         this.class_ = json.class_ || '';
         this.parentNode = json.parentNode || null; // sin padre por defecto
@@ -16,9 +16,10 @@ export class HTML_POJO {
     insertNode() {
         this.node.id = this.id;
         this.node.innerHTML = this.innerHTML;
-        this.class_.split(" ").forEach(addedClass => {
-		    this.node.classList.add(addedClass);
-        });
+        if(this.class_.length > 0)
+            this.class_.split(" ").forEach(addedClass => {
+                this.node.classList.add(addedClass);
+            });
 		this.parentNode.appendChild(this.node);
     }
 
@@ -33,6 +34,14 @@ export class HTML_POJO {
         if(json.id != undefined)
             div+= ` id="${json.id}"`
         return div + `>${json.innerHTML}</div>`;
+    }
+
+    span(json) {
+        let class_ = json.class_ || '';
+        let span = `<span class="${class_}"`;
+        if(json.id != undefined)
+            span+= ` id="${json.id}"`
+        return span + `>${json.innerHTML}</span>`;
     }
     
     a(json) {
