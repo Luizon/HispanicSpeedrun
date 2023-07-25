@@ -35,6 +35,14 @@ export class HTML_POJO {
             div+= ` id="${json.id}"`
         return div + `>${json.innerHTML}</div>`;
     }
+
+    span(json) {
+        let class_ = json.class_ || '';
+        let span = `<span class="${class_}"`;
+        if(json.id != undefined)
+            span+= ` id="${json.id}"`
+        return span + `>${json.innerHTML}</span>`;
+    }
     
     a(json) {
         let class_ = json.class_ || '';

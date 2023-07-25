@@ -1,6 +1,6 @@
 // this doesn't even work, but it CAN do it someday if I need the API v2 from speedrun.com
 
-// function encode64(gameId, categoryId) {
+// function encodeLeaderboard64(gameId, categoryId) {
 // 	// se asume que si hay subcaegoria, esto generara error en leaderboards sin subcategoria
 // 	let variables = "";
 // 	if(leaderboard.subcategory.key) {
@@ -21,7 +21,7 @@
 // // carga runs con API v1 y carga runners con API v2
 // async function createRunBars(json) {
 // 	let apiV1URL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
-// 	let apiV2URL = `${SPEEDRUN_API_V2}/GetGameLeaderboard?_r=${encode64(json.game, json.category)}`;
+// 	let apiV2URL = `${SPEEDRUN_API_V2}/GetGameLeaderboard?_r=${encodeLeaderboard64(json.game, json.category)}`;
 
 // 	// console.log(apiV2URL);
 
