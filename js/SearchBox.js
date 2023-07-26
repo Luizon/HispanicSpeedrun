@@ -109,6 +109,7 @@ async function searchText() {
         .fail(err => {
             console.log(`error al buscar ${searchText}`);
             console.log(err);
+            $(".search-title-label").html("Error temporal con speedrun.com.<br>No será posible usar el buscador por ahora.<br><br>Intenta de nuevo más tarde.");
     	});
 }
 
