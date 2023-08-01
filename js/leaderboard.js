@@ -41,10 +41,15 @@ async function loadCategories(json) {
 			if(getEnviroment() == "dev")
 				console.log(apiAnswer);
 			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri.replace("gameasset", "static/game")}')`; // background
+			$(".discord-leaderboard")[0].hidden = false;
 			if($("#divDiscord")[0].href.length == 0) {
-				$("#divDiscord")[0].href = apiAnswer.data.discord;
-				$("#divDiscord")[0].title = `Comunidad angloparlante de ${apiAnswer.data.names.international}`;
-				activateTooltip($("#divDiscord")[0]);
+				if(apiAnswer.data.discord) {
+					$("#divDiscord")[0].href = apiAnswer.data.discord;
+					$("#divDiscord")[0].title = `Comunidad angloparlante de ${apiAnswer.data.names.international}`;
+					activateTooltip($("#divDiscord")[0]);
+				}
+				else
+					$(".discord-leaderboard").remove();
 			}
 			if(apiAnswer.data.assets["trophy-1st"])
 				topImg[1] = apiAnswer.data.assets["trophy-1st"].uri;
@@ -122,8 +127,8 @@ async function loadSubcategories(categoryID) {
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			let variables = apiAnswer.data
-			if(getEnviroment() == "dev")
-				console.log(apiAnswer);
+			// if(getEnviroment() == "dev")
+			// 	console.log(apiAnswer);
 			let hasSubcategories = false;
 			let numberOfSubcategories = 0;
 			variables.forEach(variable => {
@@ -133,8 +138,8 @@ async function loadSubcategories(categoryID) {
 						$("#subcategories").append(document.createElement("br"));
 					}
 					numberOfSubcategories++;
-					if(getEnviroment() == "dev")
-						console.log(variable);
+					// if(getEnviroment() == "dev")
+					// 	console.log(variable);
 					hasSubcategories = true;
 					let newSubcategory = {
 						key : variable.id,
@@ -155,8 +160,8 @@ async function loadSubcategories(categoryID) {
 							subcategories.forEach( subcategory => {
 								subcategory = subcategory.split("@");
 								if(subcategory[0] == iSubcategoryName && subcategory[1] == iSubcategoryLabel.toLowerCase()) {
-									if(getEnviroment() == "dev")
-										console.log(subcategory)
+									// if(getEnviroment() == "dev")
+									// 	console.log(subcategory)
 									subcategoryKey = iSubcategoryKey;
 									subcategoryNode.classList.add("btn-active");
 									subcategoryLabel = iSubcategoryLabel;
@@ -218,8 +223,8 @@ async function loadSubcategories(categoryID) {
 				}
 		});
 	
-	if(getEnviroment() == "dev")
-		console.log(leaderboard.variables)
+	// if(getEnviroment() == "dev")
+	// 	console.log(leaderboard.variables)
 	let variables = "";
 	for(let iVariable in leaderboard.variables) {
 		variables+= `${leaderboard.variables[iVariable].name}, `;
@@ -228,12 +233,6 @@ async function loadSubcategories(categoryID) {
 		variables = variables.substring(0, variables.length - 2); // quita el ", " del final
 
 	new RunBar({
-		hPosition : "Ñ",
-		globalPosition : "#",
-		country : "País",
-		player : "Runner",
-		time : "Tiempo",
-		date : "Fecha",
 		subcategory : variables || "",
 		parentNode: $("#runBarHeader")[0],
 		class_ : `odd run-bar-header`,
@@ -250,10 +249,10 @@ async function createRunBars(json) {
 			apiURL+= `&var-${subcategory.key}=${subcategory.ID}`;
 		});
 	}
-	if(getEnviroment() == "dev")
-		console.log(leaderboard.subcategories)
-	if(getEnviroment() == "dev")
-		console.log(apiURL);
+	// if(getEnviroment() == "dev")
+	// 	console.log(leaderboard.subcategories)
+	// if(getEnviroment() == "dev")
+	// 	console.log(apiURL);
 
 	if(urlParams.has("top")) {
 		await insertRunBarsV1(apiURL, urlParams.get("top")); // limite definido por jugador
@@ -268,25 +267,53 @@ async function insertRunBarsV1(apiURL, top = false) {
 	if(top)
 		apiURL+= "&top=" + top;
 	await $.get(apiURL)
-		.done(apiAnswer => {
+		.done( async apiAnswer => {
 			if(getEnviroment() == "dev")
 				console.log(apiAnswer)
 			let runs = apiAnswer.data.runs;
 			let players = apiAnswer.data.players;
+			let basicInfoPlayers = [];
+			let hispanicPlayers = [];
 			runnersArray = [];
-			runs.forEach(async (run, i) => {
+			await players.data.forEach(async (player, i) => { // antes de recorrer las runs, hay que encontrar los runners hispanos
 				if(!top)
 					if(i < DEFAULT_LIMIT) // que no se inserten runners que ya se insertaron anteriormente
 						return false;
-				if(players.data[i].location == null) // hay runners que no tienen su pais puesto
-					return false; // estos runners se omiten
-				let runnersCountry = players.data[i].location.country.names.international;
-
-				// si el pais no es hispano, no se agrega la run
-				if(!Object.keys(HISPANIC_COUNTRYS).includes(runnersCountry.toLowerCase()))
+				if(player.rel.toLowerCase() == "guest") { // a veces el invitado no tiene cuenta en speedrun.com
 					return false;
-				let runnerName = players.data[i].names.international;
-				runnersCountry = HISPANIC_COUNTRYS[runnersCountry.toLowerCase()]; // traduce pais a español
+				}
+				basicInfoPlayers[player.id] = {
+					name: player.names.international,
+				};
+				let runnerCountry = "", countryCode = "";
+				if(player.location != null) // hay runners que no tienen su pais puesto
+				{
+					runnerCountry = player.location.country.names.international;
+					countryCode = player.location.country.code;
+				}
+				basicInfoPlayers[player.id]['country'] = HISPANIC_COUNTRYS[runnerCountry.toLowerCase()] || runnerCountry;
+				basicInfoPlayers[player.id]['countryCode'] = countryCode;
+				if(Object.keys(HISPANIC_COUNTRYS).includes(runnerCountry.toLowerCase()))
+					hispanicPlayers.push(player.id);
+			});
+			runs.forEach(async (run, i) => { // ahora se recorren las runs tal como vienen
+				let includeThisRun = false;
+				let runners = [];
+				run.run.players.forEach( multiplayerPlayer => {
+					if(!multiplayerPlayer.id) {
+						runners.push({
+							name: multiplayerPlayer.name,
+							rel: "guest",
+						});
+						return true;
+					}
+					runners.push(basicInfoPlayers[multiplayerPlayer.id]);
+					if(hispanicPlayers.includes(multiplayerPlayer.id)) {
+						includeThisRun = true;
+					}
+				});
+				if(!includeThisRun)
+					return false;
 
 				let variables = "";
 				for(let iVariable in run.run.values)
@@ -298,9 +325,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 				let newRunBar = new RunBar({
 					hPosition : hPosition++,
 					globalPosition : run.place,
-					countryCode : players.data[i].location.country.code,
-					country : runnersCountry,
-					player : runnerName,
+					playersList: runners,
 					url : run.run.weblink,
 					comment : run.run.comment,
 					time : formatTime(run.run.times.primary_t),
@@ -384,29 +409,6 @@ window.onload = async function() {
 		window.location.href = "../";
 	startedAt = new Date();
 	luizonShouldOptimizeThisWebPage();
-
-	if(getEnviroment() == "prod") {
-		console.log('%c ALTO AHÍ ', 'background: #FFFF00 ; color: #ff0000 ; font-size: 40px; font-weight: bold;');
-		console.log('%cEsta consola es exclusiva para desarollo. No escribas ni pegues ningún código que no entiendas.', 'font-size: 20px;');
-		console.log(`
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⡾⣻⣿⣿⣿⣿⣯⣍⠛⠻⢷⣦⣀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⠟⢁⣾⠟⠋⣁⣀⣤⡉⠻⣷⡀⠀⠙⢿⣷⣄⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⣰⣿⠏⠀⠀⢸⣿⠀⠼⢋⣉⣈⡳⢀⣿⠃⠀⠀⠀⠙⣿⣦⡀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢰⡿⠿⣷⡀⠀⠀⠀⣼⣿⠃⠀⠀⣀⣤⡿⠟⠛⠋⠉⠉⠙⢛⣻⠶⣦⣄⡀⠀⠘⣿⣷⡀⠀⠀⠀
-⢠⣾⠟⠳⣦⣄⢸⡇⠀⠈⣷⡀⠀⣼⣿⡏⢀⣤⡾⢋⣵⠿⠻⢿⠋⠉⠉⢻⠟⠛⠻⣦⣝⠻⣷⣄⠸⣿⣿⠀⠀⠀
-⠘⣧⠀⠀⠀⠙⢿⣿⠀⠀⢸⣷⠀⣿⣿⣧⣾⣏⡴⠛⢡⠖⢛⣲⣅⠀⠀⣴⣋⡉⠳⡄⠈⠳⢬⣿⣿⣿⡿⠀⠀⠀
-⠀⠘⠷⣤⣀⣀⣀⣽⡶⠛⠛⠛⢷⣿⣿⣿⣿⣏⠀⠀⡏⢰⡿⢿⣿⠀⠀⣿⠻⣿⠀⡷⠀⣠⣾⣿⡿⠛⠷⣦⠀⠀
-⠀⠀⢀⣾⠟⠉⠙⣿⣤⣄⠀⢀⣾⠉⠀⢹⣿⣿⣷⠀⠹⡘⣷⠾⠛⠋⠉⠛⠻⢿⡴⢃⣄⣻⣿⣿⣷⠀⠀⢹⡇⠀
-⠀⠀⢸⡇⠈⠉⠛⢦⣿⡏⠀⢸⣧⠀⠈⠻⣿⡿⢣⣾⣦⣽⠃⠀⠀⠀⠀⠀⠀⠀⣷⣾⣿⡇⠉⢿⡇⠀⢀⣼⠇⠀
-⠀⠀⠘⣷⡠⣄⣀⣼⠇⠀⠀⠀⠻⣷⣤⣀⣸⡇⠀⠹⣿⣿⣦⣀⠀⠀⠀⠀⢀⣴⣿⣿⡟⠀⠀⢸⣷⣾⡿⠃⠀⠀
-⠀⠀⠀⠈⠻⢦⣍⣀⣀⣀⡄⠀⣰⣿⡿⠿⢿⣇⠀⠀⠉⠛⠻⣿⣿⡷⠾⣿⣿⡿⠉⠁⠀⠀⢀⣾⠋⠁⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠈⠉⠉⠙⠿⢿⣿⣇⠀⠀⠈⢿⣧⣄⠀⠀⠀⢹⣷⣶⣶⣾⣿⡇⠀⠀⣀⣴⡿⣧⣄⡀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢿⣷⡀⠀⠀⠙⢿⣿⣶⣤⡀⠻⢤⣀⡤⠞⢀⣴⣿⣿⠟⢷⡀⠙⠻⣦⣄⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢻⣦⠀⢠⡟⠁⠙⢻⣿⠷⠶⣶⠶⠾⠛⠙⣿⠇⠀⠀⢻⡄⠀⠀⠙⢷⡀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⡀⣿⠁⣤⣤⡄⢻⡶⠶⠛⠛⠛⠛⠛⣿⢠⣾⣷⣆⢻⡀⠀⠀⠈⣷
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⢸⣿⣿⣿⡈⢿⡀⠀⠀⠀⠀⠀⡿⢸⣿⣿⣿⢸⡇⠀⠀⠀⡟`);
-		console.log("¡Disfruta la página!")
-	}
 
 	if(urlParams.get("juego").toLowerCase() == 'sm64') {
 		$("#divDiscord")[0].href = "https://discord.gg/2Vx5DeJvQP";

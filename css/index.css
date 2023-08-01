@@ -58,6 +58,15 @@ a:hover, .comment-btn:hover {
     min-width: 100px;
 }*/
 
+.runner-guest {
+    color: #aaa;
+    font-weight: normal;
+    text-decoration: none;
+}
+.runner-guest > div {
+    padding-top: 2px;
+}
+
 .run-bar-runner{
     font-weight: bold;
     text-align: start;
