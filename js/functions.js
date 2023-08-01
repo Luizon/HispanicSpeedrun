@@ -1,5 +1,5 @@
 export function getEnviroment() {
-    // return "dev";
+    return "dev";
     return "prod";
 }
 

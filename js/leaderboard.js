@@ -41,10 +41,15 @@ async function loadCategories(json) {
 			if(getEnviroment() == "dev")
 				console.log(apiAnswer);
 			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri.replace("gameasset", "static/game")}')`; // background
+			$(".discord-leaderboard")[0].hidden = false;
 			if($("#divDiscord")[0].href.length == 0) {
-				$("#divDiscord")[0].href = apiAnswer.data.discord;
-				$("#divDiscord")[0].title = `Comunidad angloparlante de ${apiAnswer.data.names.international}`;
-				activateTooltip($("#divDiscord")[0]);
+				if(apiAnswer.data.discord) {
+					$("#divDiscord")[0].href = apiAnswer.data.discord;
+					$("#divDiscord")[0].title = `Comunidad angloparlante de ${apiAnswer.data.names.international}`;
+					activateTooltip($("#divDiscord")[0]);
+				}
+				else
+					$(".discord-leaderboard").remove();
 			}
 			if(apiAnswer.data.assets["trophy-1st"])
 				topImg[1] = apiAnswer.data.assets["trophy-1st"].uri;
