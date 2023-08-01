@@ -76,10 +76,10 @@ async function loadCategories(json) {
 				categoryNode.innerHTML = iCategory.name;
 				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
 				categoryNode.id = "btnCa" + idCounter++;
-				let url = `../leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/%/g, "")}`;
+				let url = `../leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
 				categoryNode.href = `javascript:redirectTo("${url}", getSubcategories());`;
 				if(urlParams.has('categoria'))
-					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "")) {
+					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "")) {
 						leaderboard.category.name = iCategory.name;
 						leaderboard.category.ID = iCategory.id;
 						categoryNode.classList.add("btn-active");
@@ -149,12 +149,12 @@ async function loadSubcategories(categoryID) {
 					let subcategoryLabel = "";
 					for(let iSubcategoryKey in variable.values.values) {
 						let iSubcategoryLabel = variable.values.values[iSubcategoryKey].label;
-						let iSubcategoryName = variable.name.toLowerCase().replace(/ /g, "_").replace(/%/g, "");
+						let iSubcategoryName = variable.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "");
 						let subcategoryNode = document.createElement("a");
 						subcategoryNode.innerHTML = iSubcategoryLabel;
 						subcategoryNode.classList.add("btn", "btn-secondary", "mb-2");
 						subcategoryNode.id = `btnSubCa_${numberOfSubcategories}_${i++}`;
-						iSubcategoryLabel = iSubcategoryLabel.replace(/ /g, "_").replace(/%/g, "");
+						iSubcategoryLabel = iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "");
 						if(urlParams.has('subcategorias')) {
 							let subcategories = urlParams.get('subcategorias').toLowerCase().split(",");
 							subcategories.forEach( subcategory => {
@@ -169,9 +169,9 @@ async function loadSubcategories(categoryID) {
 							});
 						}
 		
-						let category = leaderboard.category.name.replace(/ /g, "_").replace(/%/g, "");
+						let category = leaderboard.category.name.replace(/ /g, "_").replace(/[%+]/g, "");
 						let url = `../leaderboard?juego=${urlParams.get('juego')}&categoria=${category}`;
-						subcategoryNode.href = `javascript:redirectTo("${url}", getSubcategories({"name":"${variable.name.replace(/ /g, "_").replace(/%/g, "")}", "label":"${iSubcategoryLabel.replace(/ /g, "_").replace(/%/g, "")}"}));`
+						subcategoryNode.href = `javascript:redirectTo("${url}", getSubcategories({"name":"${variable.name.replace(/ /g, "_").replace(/[%+]/g, "")}", "label":"${iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "")}"}));`
 						let elmentListNode = document.createElement("li");
 						elmentListNode.appendChild(subcategoryNode);
 						$("#subcategories").append(elmentListNode);
@@ -185,7 +185,7 @@ async function loadSubcategories(categoryID) {
 
 					if(subcategoriesString.length > 0)
 						subcategoriesString+= ",";
-					subcategoriesString+= variable.name.replace(/ /g, "_").replace(/%/g, "") + "@" + subcategoryLabel;
+					subcategoriesString+= variable.name.replace(/ /g, "_").replace(/[%+]/g, "") + "@" + subcategoryLabel;
 
 					newSubcategory.ID = subcategoryKey;
 					newSubcategory.label = variable.values.values[subcategoryKey].label;
@@ -381,7 +381,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 
 function loadLessInformationMessage() {
 	let game = urlParams.get("juego");
-	let category = leaderboard.category.name.replace(" ", "_").replace("%", "");
+	let category = leaderboard.category.name.replace(" ", "_").replace(/[%+]/g, "");
 	let subcategory = "";
 	if(leaderboard.subcategories.length > 0) {
 		leaderboard.subcategories.forEach( (isubcategory) => {
