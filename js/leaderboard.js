@@ -233,12 +233,6 @@ async function loadSubcategories(categoryID) {
 		variables = variables.substring(0, variables.length - 2); // quita el ", " del final
 
 	new RunBar({
-		hPosition : "Ñ",
-		globalPosition : "#",
-		country : "País",
-		player : "Runner",
-		time : "Tiempo",
-		date : "Fecha",
 		subcategory : variables || "",
 		parentNode: $("#runBarHeader")[0],
 		class_ : `odd run-bar-header`,
@@ -278,49 +272,48 @@ async function insertRunBarsV1(apiURL, top = false) {
 				console.log(apiAnswer)
 			let runs = apiAnswer.data.runs;
 			let players = apiAnswer.data.players;
+			let basicInfoPlayers = [];
 			let hispanicPlayers = [];
 			runnersArray = [];
-			await players.data.forEach(async (player, i) => { // primero se encuentran a los runners que si son hispanos
+			await players.data.forEach(async (player, i) => { // antes de recorrer las runs, hay que encontrar los runners hispanos
 				if(!top)
 					if(i < DEFAULT_LIMIT) // que no se inserten runners que ya se insertaron anteriormente
 						return false;
-				if(player.location == null) // hay runners que no tienen su pais puesto
-					return false; // estos runners se omiten
-				let runnersCountry = player.location.country.names.international;
-				if(!Object.keys(HISPANIC_COUNTRYS).includes(runnersCountry.toLowerCase()))
+				if(player.rel.toLowerCase() == "guest") { // a veces el invitado no tiene cuenta en speedrun.com
 					return false;
-				console.log(player.location.country.names.international);
-				hispanicPlayers[player.id] = {
+				}
+				basicInfoPlayers[player.id] = {
 					name: player.names.international,
-					country: HISPANIC_COUNTRYS[runnersCountry.toLowerCase()], // se traduce a español
-					countryCode: player.location.country.code
 				};
+				let runnerCountry = "", countryCode = "";
+				if(player.location != null) // hay runners que no tienen su pais puesto
+				{
+					runnerCountry = player.location.country.names.international;
+					countryCode = player.location.country.code;
+				}
+				basicInfoPlayers[player.id]['country'] = HISPANIC_COUNTRYS[runnerCountry.toLowerCase()] || runnerCountry;
+				basicInfoPlayers[player.id]['countryCode'] = countryCode;
+				if(Object.keys(HISPANIC_COUNTRYS).includes(runnerCountry.toLowerCase()))
+					hispanicPlayers.push(player.id);
 			});
-			console.log(hispanicPlayers);
 			runs.forEach(async (run, i) => { // ahora se recorren las runs tal como vienen
-				// if(!top)
-				// 	if(i < DEFAULT_LIMIT) // que no se inserten runners que ya se insertaron anteriormente
-				// 		return false;
-				// if(players.data[i].location == null) // hay runners que no tienen su pais puesto
-				// 	return false; // estos runners se omiten
-				// let runnersCountry = players.data[i].location.country.names.international;
-
-				// // si el pais no es hispano, no se agrega la run
-				// if(!Object.keys(HISPANIC_COUNTRYS).includes(runnersCountry.toLowerCase()))
-				// 	return false;
-				// let runnerName = players.data[i].names.international;
-				// runnersCountry = HISPANIC_COUNTRYS[runnersCountry.toLowerCase()]; // traduce pais a español
-
 				let includeThisRun = false;
 				let runners = [];
 				run.run.players.forEach( multiplayerPlayer => {
+					if(!multiplayerPlayer.id) {
+						runners.push({
+							name: multiplayerPlayer.name,
+							rel: "guest",
+						});
+						return true;
+					}
+					runners.push(basicInfoPlayers[multiplayerPlayer.id]);
 					if(hispanicPlayers.includes(multiplayerPlayer.id)) {
 						includeThisRun = true;
-						runners.push(hispanicPlayers[multiplayerPlayer.id]);
 					}
 				});
 				if(!includeThisRun)
-					return console.log("no se incluye a este");
+					return false;
 
 				let variables = "";
 				for(let iVariable in run.run.values)
@@ -332,12 +325,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 				let newRunBar = new RunBar({
 					hPosition : hPosition++,
 					globalPosition : run.place,
-					// countryCode : players.data[i].location.country.code,
-					countryCode : runners[0].countryCode,
-					// country : runnersCountry,
-					country : runners[0].country,
-					// player : runnerName,
-					player : runners[0].name,
+					playersList: runners,
 					url : run.run.weblink,
 					comment : run.run.comment,
 					time : formatTime(run.run.times.primary_t),

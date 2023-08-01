@@ -43,7 +43,8 @@ async function searchText() {
     }
     $(".search-games-container").html("<span class='search-title-label'>Cargando...</span>");
 	let apiURL = `${SPEEDRUN_API_V2}/GetSearch?_r=${encodeSearch64(searchText)}`;
-    console.log(apiURL)
+    if(getEnviroment() == "dev")
+        console.log(apiURL)
 	await $.get(apiURL)
 		.done(apiAnswer => {
             $(".search-games-container").html("");
