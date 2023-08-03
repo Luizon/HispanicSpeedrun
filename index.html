@@ -18,14 +18,18 @@
     <script src="./js/templates/coffee.js"></script>
     <script src="./js/templates/nav.js"></script>
     <script src="./js/SearchBox.js" type="module"></script>
+    <script src="./js/Index.js" type="module"></script>
     <h1>Bienvenido a SpeedruÑ.com</h1>
     <div class="mt-4"></div>
     <p>
         Selecciona un juego para ver su leaderboard Ñ.
     </p>
-    <a class="btn btn-dark mb-3" href="./leaderboard/?juego=sm64&categoria=120_star&subcategoria=n64">Super Mario 64</a>
-    <br />
-    <a class="btn btn-dark" href="./leaderboard/?juego=smo&categoria=any&subcategoria=1p">Super Mario Odyssey</a>
+    <div id="gamesContainer" class="row">
+        <div>
+            <img class="loading-category-img" src="../img/loading.svg" alt="Cargando categorias">
+            &nbsp;Cargando categorías
+        </div>
+    </div>
 
     <script src="./js/templates/footer.js"></script>
 </body>

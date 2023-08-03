@@ -68,7 +68,7 @@ async function searchText() {
                     if(asset.assetType == "cover")
                         coverAsset = `https://speedrun.com${asset.path}`;
                 });
-                let releaseDate = new Date(parseInt(`${game.releaseDate}000`));
+                let releaseDate = new Date(parseInt(`${game.releaseDate + 36000}000`));
                 new SearchBar({
                     url : `https://speedruñ.com/leaderboard/?juego=${game.url}`,
                     name : game.name,

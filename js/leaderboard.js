@@ -444,6 +444,9 @@ window.onload = async function() {
 	await createRunBars({ // carga la leaderboard como tal
 		game : leaderboard.game.ID,
 		category : leaderboard.category.ID
-	});
-	// activateTooltips();
+	}).catch( err=> {
+		console.log(err);
+		salir = true;
+	});;
+	activateTooltips();
 }
