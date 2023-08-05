@@ -131,9 +131,13 @@ async function loadSubcategories(categoryID) {
 			// 	console.log(apiAnswer);
 			let hasSubcategories = false;
 			let numberOfSubcategories = 0;
+			console.log(variables);
 			variables.forEach(variable => {
 				let i = 0;
 				if(variable['is-subcategory']) {
+					if(variable['scope'])
+						if(variable['scope'].type != "full-game") // si es full-game siendo subcategoria, lo mas probable es que se subio erroneamente esta variable
+							return;
 					if(numberOfSubcategories > 0) {
 						$("#subcategories").append(document.createElement("br"));
 					}

@@ -6,7 +6,7 @@ navbarNode.innerHTML =
   Ñ
 </span>
 <div class="container-fluid">
-  <a class="navbar-brand" href="${LINKS.ñ_index}">SpeedruÑ.com</a>
+  <a class="navbar-brand" href="${LINKS.ñ_index}">ESpeedruÑ.com</a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -19,12 +19,12 @@ navbarNode.innerHTML =
         <a class="nav-link" href="javascript:contactanos()">Contáctanos</a>
       </li>
     </ul>
-    <div id="searcherNavContainer" class="row ps-1 pe-1 m-0 me-lg-4 me-xl-4 pe-lg-2 pe-xl-2 justify-content-center justify-content-lg-end justify-content-xl-end" style="width: 100%;">
+    <div id="searcherNavContainer" class="row ps-1 pe-1 m-0 me-lg-4 me-xl-4 pe-lg-2 pe-xl-2 justify-content-center justify-content-lg-end justify-content-xl-end position-relative" style="width: 100%;">
       <div class="col p-0">
         <input id="searcherNav" class="form-control" type="search" placeholder="Buscar juego" aria-label="Search">
       </div>
       <button id="btnSearcherNav" class="btn btn-outline-secondary col-auto">
-        <img src="https://speedruñ.com/img/search.svg">
+        <img src="https://espeedruñ.com/img/search.svg">
       </button>
       <div class="search-games-container d-none">
         <span class='search-title-label'>Presiona el botón para buscar</span>
@@ -57,7 +57,7 @@ function acercaDe() {
     onEscape : true,
     message: "Esta página fue creada sin fines de lucro, con el único propósito de documentar acerca de las <b style='color: inherit;'>posiciones mundiales de los speedrunners hispanohablantes</b>."
       + "<br>Es posible que encuentres jugadores que no sean hispanohablantes en las tablas o que no encuentres speedrunners que conozcas, esto es debido a que <b style='color: inherit;'>se filtra según la bandera del jugador</b>. Si en speedrun.com no tiene colocado un país hispano entonces no se mostrará en las tablas de esta página."
-      + "<br><br>¡SpeedruÑ.com seguirá mejorando!"
+      + "<br><br>¡ESpeedruÑ.com seguirá mejorando!"
   });
 }
 
