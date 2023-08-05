@@ -1,5 +1,4 @@
-// import { searcherNavListener } from "https://espeedruñ.com/js/SearchBox.js";
-import { callSearcherNavListener } from "./SearchBox.js";
+import { callSearcherNavListener } from "https://espeedruñ.com/js/SearchBox.js";
 
 $("#searcherNavContainer").remove();
 
