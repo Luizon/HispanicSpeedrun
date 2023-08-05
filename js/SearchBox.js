@@ -1,7 +1,9 @@
-import { SearchBar } from "https://speedruñ.com/js/POO/SearchBar.js";
-import { getEnviroment } from "https://speedruñ.com/js/functions.js";
+import { SearchBar } from "https://espeedruñ.com/js/POO/SearchBar.js";
+import { getEnviroment } from "https://espeedruñ.com/js/functions.js";
 
-function searcherNavListener() {
+export function callSearcherNavListener() { searcherNavListener(10); }
+
+function searcherNavListener(limit = 6) {
     $("#searcherNav").on("focus", evt => {
         $(".search-games-container").width($("#searcherNavContainer").width());
         if($(".search-games-container").hasClass("d-none"))
@@ -25,15 +27,15 @@ function searcherNavListener() {
     $(".search-games-container").on("mouseleave", evt => {
         hideContainer();
     });
-    $("#btnSearcherNav").on("click", searchText );
+    $("#btnSearcherNav").on("click", e => { searchText(limit); } );
     $("#searcherNav, #btnSearcherNav").on("keydown", evt => {
         if(evt.keyCode == 13) { // return
-            searchText();
+            searchText(limit);
         }
     } );
 }
 
-async function searchText() {
+async function searchText(limit) {
     let searchText = $("#searcherNav").val();
     if(searchText.trim().length == 0) {
         $(".search-games-container").html(
@@ -42,7 +44,7 @@ async function searchText() {
         return false;
     }
     $(".search-games-container").html("<span class='search-title-label'>Cargando...</span>");
-	let apiURL = `${SPEEDRUN_API_V2}/GetSearch?_r=${encodeSearch64(searchText)}`;
+	let apiURL = `${SPEEDRUN_API_V2}/GetSearch?_r=${encodeSearch64(searchText, limit)}`;
     if(getEnviroment() == "dev")
         console.log(apiURL)
 	await $.get(apiURL)
@@ -68,9 +70,9 @@ async function searchText() {
                     if(asset.assetType == "cover")
                         coverAsset = `https://speedrun.com${asset.path}`;
                 });
-                let releaseDate = new Date(parseInt(`${game.releaseDate}000`));
+                let releaseDate = new Date(parseInt(`${game.releaseDate + 36000}000`));
                 new SearchBar({
-                    url : `https://speedruñ.com/leaderboard/?juego=${game.url}`,
+                    url : `https://espeedruñ.com/leaderboard/?juego=${game.url}`,
                     name : game.name,
                     cover : coverAsset,
                     parentNode: $(".search-games-container")[0],
@@ -114,8 +116,8 @@ async function searchText() {
     	});
 }
 
-function encodeSearch64(searchText) {
-    let rawJson = `{"query":"${searchText}","limit":6,"includeGames":true,"includeNews":false,"includePages":false,"includeSeries":false,"includeUsers":true}`;
+function encodeSearch64(searchText, limit) {
+    let rawJson = `{"query":"${searchText}","limit":${limit},"includeGames":true,"includeNews":false,"includePages":false,"includeSeries":false,"includeUsers":true}`;
     let output = btoa(rawJson);
     output = output.replace(/=/g, "");
     return output;

@@ -52,7 +52,7 @@ export class RunBar extends HTML_POJO {
 				src : `../img/dialog.svg`,
 				alt : "c",
 				class_ : "comment-img",
-				title : "Comentario",
+				title : "",
 			})}</button>`;
 	}
 	

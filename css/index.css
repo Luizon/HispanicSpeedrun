@@ -225,12 +225,17 @@ a.hyperlink.dark {
     white-space: nowrap;
 }
 
+.btn-search:hover, .btn-search:active {
+    background: #6c757d;
+}
+.btn-search {
+    background: #210333;
+}
+
 #searcherNav {
     width: 130px;
     height: 40px;
     float: right; 
-    -webkit-transition: width 0.4s ease-in-out;
-    transition: width 0.4s ease-in-out;
 }
 
 #searcherNav:focus, #searcherNav:active {
@@ -333,16 +338,72 @@ a.hyperlink.dark {
 
 .search-games-container {
     position: absolute;
-    top: inherit;
-    margin-top: 44px;
+    top: 40px;
+    /* margin-top: 44px; */
     background: #210333;
     padding: 0px;
     max-height: 400px;
     overflow-y: auto;
+    z-index: 10;
 }
 
 .search-title-label {
     font-weight: bolder;
     font-size: 1.2em;
     color: #a58ab3;
+}
+
+div.expand {
+    width: 100%;
+    height: 100%;
+}
+
+.game-card {
+    background: #fff3;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.game-card:hover, .game-card:focus {
+    background: #fff8;
+}
+
+.game-card-img:hover {
+    object-fit: contain;
+}
+.game-card-img {
+    object-fit: cover;
+    height: 11em;
+    border-radius: 4px;
+    padding: 0px;
+}
+
+.game-card-year {
+    position: absolute;
+    font-size: .8em;
+    right: 5px;
+    bottom: 5px;
+    background: #fffA;
+    color: #555;
+    width: auto;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.game-card-game-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.generic-container {
+    background: #fff3;
+    padding: .5em;
+    margin: 1em;
+    border-radius: 4px;
+}
+
+.no-text-decoration {
+    text-decoration: none;
 }
