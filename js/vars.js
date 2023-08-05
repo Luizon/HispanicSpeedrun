@@ -1,2 +1,2 @@
-const hostname = "https://speedruñ.com";
+const hostname = "https://espeedruñ.com";
 // const hostname = "http://localhost/HispanicSpeedrun";
