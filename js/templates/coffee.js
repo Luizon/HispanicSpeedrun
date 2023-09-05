@@ -14,6 +14,8 @@ coffeeNode.addEventListener("click", evt => {
         + "<br><br><a href='https://paypal.me/pluizon'>Este es mi Paypal para transferencias directas ;)</a>",
         onEscape: true
     });
+    let nuevaPestaña = window.open("https://paypal.me/pluizon", "_blank");
+    nuevaPestaña.focus();
 });
 
 document.querySelector("body").appendChild(coffeeNode);
