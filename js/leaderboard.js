@@ -133,17 +133,23 @@ async function loadSubcategories(categoryID) {
 			let numberOfSubcategories = 0;
 			console.log(variables);
 			variables.forEach(variable => {
+				// if(getEnviroment() == "dev")
+				// 	console.log(variable.name);
+				if(variable.name.toLowerCase().includes("(test)"))
+					return false;
 				let i = 0;
 				if(variable['is-subcategory']) {
 					if(variable['scope'])
-						if(variable['scope'].type != "full-game") // si es full-game siendo subcategoria, lo mas probable es que se subio erroneamente esta variable
+						// idk why works correctly as "global" in some leaderboards, it is what it is
+						// also if it's not setted as full-game while being a subcategory, it's probably that it's something incorrectly submitted, I'm not even sure what "thing"
+						if(!["global", "full-game"].includes(variable['scope'].type))
 							return;
 					if(numberOfSubcategories > 0) {
 						$("#subcategories").append(document.createElement("br"));
 					}
 					numberOfSubcategories++;
-					// if(getEnviroment() == "dev")
-					// 	console.log(variable);
+					if(getEnviroment() == "dev")
+						console.log(variable);
 					hasSubcategories = true;
 					let newSubcategory = {
 						key : variable.id,
@@ -164,8 +170,8 @@ async function loadSubcategories(categoryID) {
 							subcategories.forEach( subcategory => {
 								subcategory = subcategory.split("@");
 								if(subcategory[0] == iSubcategoryName && subcategory[1] == iSubcategoryLabel.toLowerCase()) {
-									// if(getEnviroment() == "dev")
-									// 	console.log(subcategory)
+									if(getEnviroment() == "dev")
+										console.log(subcategory)
 									subcategoryKey = iSubcategoryKey;
 									subcategoryNode.classList.add("btn-active");
 									subcategoryLabel = iSubcategoryLabel;
@@ -179,7 +185,6 @@ async function loadSubcategories(categoryID) {
 						let elmentListNode = document.createElement("li");
 						elmentListNode.appendChild(subcategoryNode);
 						$("#subcategories").append(elmentListNode);
-
 					}
 					// variable.values.values[subcategoryKey].rules; // reglas
 					if(subcategoryKey == Object.keys(variable.values.values)[0]) {
@@ -227,8 +232,8 @@ async function loadSubcategories(categoryID) {
 				}
 		});
 	
-	// if(getEnviroment() == "dev")
-	// 	console.log(leaderboard.variables)
+	if(getEnviroment() == "dev")
+		console.log(leaderboard.variables)
 	let variables = "";
 	for(let iVariable in leaderboard.variables) {
 		variables+= `${leaderboard.variables[iVariable].name}, `;
@@ -253,10 +258,10 @@ async function createRunBars(json) {
 			apiURL+= `&var-${subcategory.key}=${subcategory.ID}`;
 		});
 	}
-	// if(getEnviroment() == "dev")
-	// 	console.log(leaderboard.subcategories)
-	// if(getEnviroment() == "dev")
-	// 	console.log(apiURL);
+	if(getEnviroment() == "dev")
+		console.log(leaderboard.subcategories)
+	if(getEnviroment() == "dev")
+		console.log(apiURL);
 
 	if(urlParams.has("top")) {
 		await insertRunBarsV1(apiURL, urlParams.get("top")); // limite definido por jugador
