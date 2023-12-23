@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+   <url>
+
+      <loc>https://xn--espeedru-k3a.com/</loc>
+
+      <lastmod>2023-09-04</lastmod>
+
+      <changefreq>monthly</changefreq>
+
+      <priority>1.0</priority>
+
+   </url>
+
+   <url>
+
+      <loc>https://xn--espeedru-k3a.com/leaderboard/?juego=sm64</loc>
+
+      <changefreq>always</changefreq>
+
+   </url>
+
+   <url>
+
+      <loc>https://xn--espeedru-k3a.com/leaderboard/?juego=smo</loc>
+
+      <changefreq>always</changefreq>
+
+   </url>
+
+   <url>
+
+      <loc>https://xn--espeedru-k3a.com/assets/img/favicon.png</loc>
+
+   </url>
+
+</urlset>
