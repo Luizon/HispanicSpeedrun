@@ -1,4 +1,4 @@
-// this doesn't even work, but it CAN do it someday if I need the API v2 from speedrun.com
+// this doesn't even work, maybe someday tho. Idk
 
 // function encodeLeaderboard64(gameId, categoryId) {
 // 	// se asume que si hay subcaegoria, esto generara error en leaderboards sin subcategoria
