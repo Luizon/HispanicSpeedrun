@@ -8,7 +8,7 @@ footerNode.innerHTML =
             Toda la información mostrada en esta página es propiedad de <a class="hyperlink" href="https://speedrun.com">speedrun.com</a>.
         </p>
     </div>
-    <p class="text-white-50 lh-1">
+    <p class="text-white-50 lh-1 user-select-none">
         Ñ
     </p>
 </div>`;
