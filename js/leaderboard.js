@@ -213,6 +213,7 @@ async function loadSubcategories(categoryID) {
 			if(!hasSubcategories) {
 				let subcategoryTextNode = document.createElement('p');
 				subcategoryTextNode.innerHTML = `<strong>${leaderboard.category.name}</strong> no tiene subcategorías.`
+				subcategoryTextNode.hidden = true;
 				$("#subcategories").append(subcategoryTextNode);
 			}
 		})

@@ -15,7 +15,7 @@ async function loadGameCards() {
                     releaseDate : game.releaseDate,
                     parentNode: $("#gamesContainer")[0],
                 });
-                console.log(game);
+                // console.log(game);
             })
 		})
 		.fail(err => {

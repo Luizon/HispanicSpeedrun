@@ -351,6 +351,9 @@ a.hyperlink.dark {
     font-weight: bolder;
     font-size: 1.2em;
     color: #a58ab3;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    user-select: none !important;
 }
 
 div.expand {
@@ -406,4 +409,13 @@ div.expand {
 
 .no-text-decoration {
     text-decoration: none;
+}
+
+.user-select-none > span {
+    display: inline-flex;
+    animation: none;
+}
+
+.user-select-none > span:hover {
+    animation: hover-animation 1s;
 }

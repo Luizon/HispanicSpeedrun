@@ -1,0 +1,7 @@
+@keyframes hover-animation {
+  0% { transform: rotate(0deg); }
+  15% { transform: rotate(15deg); }
+  45% { transform: rotate(345deg); }
+  80% { transform: rotate(30deg); }
+  100% { transform: rotate(0deg); }
+}
