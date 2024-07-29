@@ -65,6 +65,7 @@ const urlParams = new URLSearchParams(queryString);
 const HISPANIC_COUNTRYS = {
     'argentina' : 'Argentina',
     'bolivia' : 'Bolivia',
+    'canary islands' : 'Islas Canarias',
     'catalonia' : 'Cataluña',
     'chile' : 'Chile',
     'colombia' : 'Colombia',
