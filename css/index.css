@@ -157,24 +157,20 @@ a.hyperlink.dark {
     color: #420666;
 }
 
-.discord-leaderboard {
-    border-radius: 100%;
-    padding: .2em;
+.bg-categories-misc {
+    background-color: #00000060;
+    border-radius: 1em;
+}
+
+.custom-btn {
     width: 2.5em;
     height: 2.5em;
-    background-color: #fff;
-    position: relative;
-    float: right;
-    top: 1em;
-    right: 1em;
+    padding: .2em;
 }
 
-.discord-leaderboard > a > img {
+.custom-btn > img {
     width: 100%;
-}
-
-.discord-leaderboard > a {
-    padding: 0em;
+    height: 100%;
 }
 
 .bootbox-close-button, .modal-title, .bootbox-body {
@@ -418,4 +414,9 @@ div.expand {
 
 .user-select-none > span:hover {
     animation: hover-animation 1s;
+}
+
+#leaderboardHeader {
+    background-color: #c4c4c4a9;
+    border-radius: 1em;
 }

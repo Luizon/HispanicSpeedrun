@@ -9,9 +9,9 @@ coffeeNode.innerHTML =
 coffeeNode.addEventListener("click", evt => {
     bootbox.dialog({
         title: "¡Muchas gracias por apoyar!",
-        message: "Yo me encargaré de pagar el hosting y el dominio de la página, así como darle soporte. Mientras speedrun.com no me solicite que se elimine, espeedruñ.com existirá ;)"
+        message: "Yo me encargaré de pagar el hosting y el dominio de la página, así como darle soporte. ¡Mientras speedrun.com no me solicite que se elimine, espeedruñ.com existirá!"
         + "<br>Eso no significa que no puedas <b style='color: inherit;'>motivarme a continuar</b> comprándome un cafécito 👀"
-        + "<br><br><a href='https://streamlabs.com/p_luizon/tip'>Este es mi Paypal para transferencias directas ;)</a>",
+        + "<br><br><a href='https://streamlabs.com/p_luizon/tip'>Link para donaciones directas ;)</a>",
         backdrop: true,
         onEscape: true,
     });
