@@ -16,7 +16,7 @@ navbarNode.innerHTML =
       <a class="nav-link" href="javascript:about()">Acerca de</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="javascript:contactUs()">Contáctanos</a>
+      <a class="nav-link" href="javascript:contactUs()">Contacto</a>
     </li>
   </ul>
   <div id="searcherNavContainer" class="row ps-1 pe-1 m-0 me-lg-4 me-xl-4 pe-lg-2 pe-xl-2 justify-content-center justify-content-lg-end justify-content-xl-end position-relative" style="width: 100%;">
@@ -59,7 +59,7 @@ function about() {
 
 function contactUs() {
   bootbox.dialog({
-    title: "Contáctanos",
+    title: "Contacto",
     onEscape : true,
     backdrop: true,
     message: "¡Hola! Soy Luizón, el creador de esta página Ñ 🤠"

@@ -5,9 +5,6 @@ export class RunBar extends HTML_POJO {
 		super(json);
 		this.hPosition = json.hPosition || 0;
 		this.globalPosition = json.globalPosition || 0;
-		// this.country = json.country || "";
-		// this.countryCode = json.countryCode || "";
-		// this.player = json.player || "Sin nombre";
 		this.playersList = json.playersList || [{player: json.player, country: "", countryCode: ""}];
 		this.url = json.url || "";
 		this.comment = json.comment || "";
@@ -67,12 +64,6 @@ export class RunBar extends HTML_POJO {
 			})
 			+ this.div({class_ : 'col run-bar-runner pe-0', innerHTML : 
 				this.div({class_: "row m-0", innerHTML : 
-					// this.a({class_ : 'col-auto p-0', url : `https://www.speedrun.com/users/${this.player}`, innerHTML :
-					// 	this.div({class_: "float-left", innerHTML : (this.countryCode ? `${this.flag} ` : "") + `${this.player}`}) // si no tiene bandera, no se pondra el espacio
-					// })
-					// + this.a({class_ : 'col p-0', url : this.url, innerHTML :
-					// 	this.div({class_: "", innerHTML : ""})
-					// })
 					this.divPlayers()
 					+ this.commentButton()
 				})
@@ -84,8 +75,6 @@ export class RunBar extends HTML_POJO {
 					+ this.div({class_ : 'col run-bar-date d-none d-sm-block d-md-block d-lg-block d-xl-block', innerHTML : this.date })
 			}	)
 			});
-		// if(this.url) // se supone que siempre habra url
-		// 	this.innerHTML = this.a({class_ : 'row m-0 p-0', url : this.url, innerHTML : this.innerHTML });
 	}
 
 	divPlayers() {

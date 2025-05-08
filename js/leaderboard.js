@@ -51,6 +51,23 @@ async function loadCategories(json) {
 				else
 					$(".discord-leaderboard").remove();
 			}
+			$("#btnMisc")[0].title = `Ver categorías secundarias`;
+			activateTooltip($("#btnMisc")[0]);
+			$("#btnMisc").click( (e) => {
+				$("#btnMisc").tooltip("dispose");
+				if(!$("#misc_categories")[0].hidden) {
+					$("#btnMisc")[0].title = `Ver categorías secundarias`;
+					$("#btnMisc img")[0].src = "../img/open.svg";
+				}
+				else {
+					$("#btnMisc")[0].title = `Minimizar`;
+					$("#btnMisc img")[0].src = "../img/hide.svg";
+				}
+				activateTooltip($("#btnMisc")[0]);
+				$("#misc_categories_description")[0].hidden = !$("#misc_categories_description")[0].hidden;
+				$("#misc_categories")[0].hidden = !$("#misc_categories")[0].hidden;
+			});
+			
 			if(apiAnswer.data.assets["trophy-1st"])
 				topImg[1] = apiAnswer.data.assets["trophy-1st"].uri;
 			if(apiAnswer.data.assets["trophy-2nd"])
@@ -76,7 +93,8 @@ async function loadCategories(json) {
 				categoryNode.innerHTML = iCategory.name;
 				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
 				categoryNode.id = "btnCa" + idCounter++;
-				let url = `../leaderboard?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
+				let url = `../leaderboard/?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
+				// let url = `../leaderboard/index.html?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
 				categoryNode.href = `javascript:redirectTo("${url}", getSubcategories());`;
 				if(urlParams.has('categoria'))
 					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "")) {
@@ -87,7 +105,10 @@ async function loadCategories(json) {
 				
 				let elmentListNode = document.createElement("li");
 				elmentListNode.appendChild(categoryNode);
-				$("#categories").append(elmentListNode);
+				if(iCategory.miscellaneous)
+					$("#misc_categories").append(elmentListNode);
+				else
+					$("#categories").append(elmentListNode);
 			});
 			if(leaderboard.category.name == null) {
 				leaderboard.category.name = categories[0].name;
@@ -95,7 +116,9 @@ async function loadCategories(json) {
 				$("#btnCa0").addClass("btn-active");
 			}
 
-			$("#divGameTitle").html(`${apiAnswer.data.names.international} - ${ leaderboard.category.name }`);
+			$("#divGameTitle").html(`${apiAnswer.data.names.international} (${ leaderboard.category.name })`);
+			if($("#misc_categories").children().length > 0)
+				$("#misc_categories_parent")[0].hidden = false;
 		})
 		.fail(err => {
 			finished = true;
@@ -131,25 +154,20 @@ async function loadSubcategories(categoryID) {
 			// 	console.log(apiAnswer);
 			let hasSubcategories = false;
 			let numberOfSubcategories = 0;
-			console.log(variables);
 			variables.forEach(variable => {
-				// if(getEnviroment() == "dev")
-				// 	console.log(variable.name);
+				if(getEnviroment() == "dev")
+					console.log(variable.name);
 				if(variable.name.toLowerCase().includes("(test)"))
 					return false;
 				let i = 0;
 				if(variable['is-subcategory']) {
 					if(variable['scope'])
-						// idk why works correctly as "global" in some leaderboards, it is what it is
-						// also if it's not setted as full-game while being a subcategory, it's probably that it's something incorrectly submitted, I'm not even sure what "thing"
+						// idk why does "global" work correctly in some leaderboards, it does tho
 						if(!["global", "full-game"].includes(variable['scope'].type))
 							return;
-					if(numberOfSubcategories > 0) {
-						$("#subcategories").append(document.createElement("br"));
-					}
 					numberOfSubcategories++;
-					if(getEnviroment() == "dev")
-						console.log(variable);
+					// if(getEnviroment() == "dev")
+					// 	console.log(variable);
 					hasSubcategories = true;
 					let newSubcategory = {
 						key : variable.id,
@@ -157,12 +175,27 @@ async function loadSubcategories(categoryID) {
 					}
 					let subcategoryKey = Object.keys(variable.values.values)[0];
 					let subcategoryLabel = "";
+
+					let divNewSubcategory = document.createElement("div");
+					divNewSubcategory.classList.add("d-flex", "flex-column");
+
+					let titleNode = document.createElement("span");
+					titleNode.innerText = variable.name;
+					titleNode.classList.add("fw-bold","text-start","text-light","ps-1");
+					$(divNewSubcategory).append(titleNode);
+
+					let btnGroupNode = document.createElement("div");
+					btnGroupNode.classList.add("btn-group");
+					btnGroupNode.role = "group";
+					$(divNewSubcategory).append(btnGroupNode);
+
 					for(let iSubcategoryKey in variable.values.values) {
 						let iSubcategoryLabel = variable.values.values[iSubcategoryKey].label;
 						let iSubcategoryName = variable.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "");
-						let subcategoryNode = document.createElement("a");
-						subcategoryNode.innerHTML = iSubcategoryLabel;
-						subcategoryNode.classList.add("btn", "btn-secondary", "mb-2");
+						let subcategoryNode = document.createElement("button");
+						subcategoryNode.type = "button";
+						subcategoryNode.innerText = iSubcategoryLabel;
+						subcategoryNode.classList.add("btn", "btn-secondary");
 						subcategoryNode.id = `btnSubCa_${numberOfSubcategories}_${i++}`;
 						iSubcategoryLabel = iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "");
 						if(urlParams.has('subcategorias')) {
@@ -170,25 +203,30 @@ async function loadSubcategories(categoryID) {
 							subcategories.forEach( subcategory => {
 								subcategory = subcategory.split("@");
 								if(subcategory[0] == iSubcategoryName && subcategory[1] == iSubcategoryLabel.toLowerCase()) {
-									if(getEnviroment() == "dev")
-										console.log(subcategory)
+									// if(getEnviroment() == "dev")
+									// 	console.log(subcategory)
 									subcategoryKey = iSubcategoryKey;
-									subcategoryNode.classList.add("btn-active");
+									subcategoryNode.classList.add("active");
 									subcategoryLabel = iSubcategoryLabel;
 								}
 							});
 						}
 		
 						let category = leaderboard.category.name.replace(/ /g, "_").replace(/[%+]/g, "");
-						let url = `../leaderboard?juego=${urlParams.get('juego')}&categoria=${category}`;
-						subcategoryNode.href = `javascript:redirectTo("${url}", getSubcategories({"name":"${variable.name.replace(/ /g, "_").replace(/[%+]/g, "")}", "label":"${iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "")}"}));`
-						let elmentListNode = document.createElement("li");
-						elmentListNode.appendChild(subcategoryNode);
-						$("#subcategories").append(elmentListNode);
+						let url = `../leaderboard/?juego=${urlParams.get('juego')}&categoria=${category}`;
+						// let url = `../leaderboard/index.html?juego=${urlParams.get('juego')}&categoria=${category}`;
+						$(subcategoryNode).click((e) => {
+							redirectTo(url, getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "")}));
+						})
+						// let elmentListNode = document.createElement("li");
+						// elmentListNode.appendChild(subcategoryNode);
+						btnGroupNode.append(subcategoryNode);
 					}
-					// variable.values.values[subcategoryKey].rules; // reglas
+
+					$("#subcategories").append(divNewSubcategory);
+
 					if(subcategoryKey == Object.keys(variable.values.values)[0]) {
-						$(`#btnSubCa_${numberOfSubcategories}_0`)[0].classList.add("btn-active");
+						$(`#btnSubCa_${numberOfSubcategories}_0`)[0].classList.add("active");
 						subcategoryLabel = variable.values.values[Object.keys(variable.values.values)[0]].label;
 					}
 
@@ -209,7 +247,9 @@ async function loadSubcategories(categoryID) {
 					}
 				}
 			});
-			$("#subcategories div").remove(); // remueve del documento al div de "cargando subcategorias"
+
+			$("#loadingSubcategories").remove();
+
 			if(!hasSubcategories) {
 				let subcategoryTextNode = document.createElement('p');
 				subcategoryTextNode.innerHTML = `<strong>${leaderboard.category.name}</strong> no tiene subcategorías.`

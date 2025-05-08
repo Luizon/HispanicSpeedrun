@@ -7,7 +7,8 @@ export class GameCard extends HTML_POJO {
 		if(this.coverPath.includes("asset"))
 			this.coverPath = this.coverPath.replace("asset", "").replace("speedrun.com/", "speedrun.com/static/");
 		this.name = json.name;
-		this.url = `./leaderboard/?juego=${json.url}`;
+		// this.url = `./leaderboard/?juego=${json.url}`;
+		this.url = `./leaderboard/index.html?juego=${json.url}`;
 		this.releaseDate = new Date(parseInt(`${json.releaseDate + 36000}000`));
 		this.activePlayerCount = json.activePlayerCount;
 		if(this.activePlayerCount != 0)

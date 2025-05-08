@@ -112,7 +112,5 @@ const HISPANIC_AREA_ID = {
     've' : 'Venezuela',
 }
 const LINKS = {
-    'ñ_smo' : `${hostname}/leaderboard?juego=smo`,
-    'ñ_sm64' : `${hostname}/leaderboard?juego=sm64`,
     'ñ_index' : `${hostname}`,
 }
