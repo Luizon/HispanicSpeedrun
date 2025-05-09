@@ -38,7 +38,7 @@ export class RunBar extends HTML_POJO {
 	async upadateHTML() {
 		this.innerHTML = this.generateInnerHTML();
 		let thisRunBar = $(`#${this.id}`);
-		console.log(this.node)
+		// console.log(this.node)
 		thisRunBar.html(this.innerHTML);
 	}
 
