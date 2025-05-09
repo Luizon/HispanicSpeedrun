@@ -1,6 +1,6 @@
 export function getEnviroment() {
-     return "dev";
-    //return "prod";
+    //  return "dev";
+    return "prod";
 }
 
 export function formatTime(totalSeconds) {
