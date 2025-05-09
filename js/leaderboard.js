@@ -375,10 +375,9 @@ async function insertRunBarsV1(apiURL, top = false) {
 				if(variables)
 					variables = variables.substring(0, variables.length - 2); // quita el ", " del final
 
-				if(runnersArray.length > 0) {
-					if(runnersArray[runnersArray.length-1].subcategory && !variables)
-						variables=" ";
-				}
+				if(leaderboard.variables && variables.length == 0)
+					variables=" ";
+				console.log(leaderboard.variables)
 
 				let newRunBar = new RunBar({
 					hPosition : hPosition++,
@@ -506,6 +505,6 @@ window.onload = async function() {
 	}).catch( err=> {
 		console.log(err);
 		salir = true;
-	});;
+	});
 	activateTooltips();
 }
