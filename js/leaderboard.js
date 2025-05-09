@@ -53,7 +53,8 @@ async function loadCategories(json) {
 			}
 			$("#btnMisc")[0].title = `Ver categorías secundarias`;
 			activateTooltip($("#btnMisc")[0]);
-			$("#btnMisc").click( (e) => {
+
+			const btnMiscClickFunction = (e) => {
 				$("#btnMisc").tooltip("dispose");
 				if(!$("#misc_categories")[0].hidden) {
 					$("#btnMisc")[0].title = `Ver categorías secundarias`;
@@ -66,7 +67,9 @@ async function loadCategories(json) {
 				activateTooltip($("#btnMisc")[0]);
 				$("#misc_categories_description")[0].hidden = !$("#misc_categories_description")[0].hidden;
 				$("#misc_categories")[0].hidden = !$("#misc_categories")[0].hidden;
-			});
+			};
+
+			$("#btnMisc").click( btnMiscClickFunction );
 			
 			if(apiAnswer.data.assets["trophy-1st"])
 				topImg[1] = apiAnswer.data.assets["trophy-1st"].uri;
@@ -101,6 +104,8 @@ async function loadCategories(json) {
 						leaderboard.category.name = iCategory.name;
 						leaderboard.category.ID = iCategory.id;
 						categoryNode.classList.add("btn-active");
+						if(iCategory.miscellaneous)
+							btnMiscClickFunction();
 					}
 				
 				let elmentListNode = document.createElement("li");
@@ -218,8 +223,6 @@ async function loadSubcategories(categoryID) {
 						$(subcategoryNode).click((e) => {
 							redirectTo(url, getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "")}));
 						})
-						// let elmentListNode = document.createElement("li");
-						// elmentListNode.appendChild(subcategoryNode);
 						btnGroupNode.append(subcategoryNode);
 					}
 
@@ -372,6 +375,11 @@ async function insertRunBarsV1(apiURL, top = false) {
 				if(variables)
 					variables = variables.substring(0, variables.length - 2); // quita el ", " del final
 
+				if(runnersArray.length > 0) {
+					if(runnersArray[runnersArray.length-1].subcategory && !variables)
+						variables=" ";
+				}
+
 				let newRunBar = new RunBar({
 					hPosition : hPosition++,
 					globalPosition : run.place,
@@ -413,7 +421,8 @@ async function insertRunBarsV1(apiURL, top = false) {
 			console.log('error al cargar la leaderboard');
 			errorLoadingRuns('Error al cargar la leaderboard, culpa de Luizón.');
 			console.log(err);
-			console.log(leaderboard.category.ID)
+			if(getEnviroment() == "dev")
+				console.log(leaderboard.category.ID)
 			if(err.responseJSON) {
 				if(err.responseJSON.message) {
 					// alert(err.responseJSON.message);
