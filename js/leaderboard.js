@@ -22,7 +22,7 @@ var startedAt = null;
 var finished = false;
 
 async function luizonShouldOptimizeThisWebPage() {
-	while(!finished) {//!finished) {
+	while(!finished) {
 		await sleep(333);
 		if($("#loadingLeaderboardText") > 0)
 			if((new Date() - startedAt.getTime()) / 1000 > 10 && $("#loadingLeaderboardText").html().length == 0)
@@ -151,7 +151,7 @@ function errorLoadingRuns(message) {
 }
 
 async function loadSubcategories(categoryID) {
-	let apiURL = `${SPEEDRUN_API}/categories/${categoryID}/variables`;
+	const apiURL = `${SPEEDRUN_API}/categories/${categoryID}/variables`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			let variables = apiAnswer.data
@@ -174,37 +174,50 @@ async function loadSubcategories(categoryID) {
 					// if(getEnviroment() == "dev")
 					// 	console.log(variable);
 					hasSubcategories = true;
-					let newSubcategory = {
+					const newSubcategory = {
 						key : variable.id,
 						name : variable.name
 					}
 					let subcategoryKey = Object.keys(variable.values.values)[0];
 					let subcategoryLabel = "";
 
-					let divNewSubcategory = document.createElement("div");
+					const category = leaderboard.category.name.replace(/ /g, "_").replace(/[%+]/g, "");
+					const url = `../leaderboard/?juego=${urlParams.get('juego')}&categoria=${category}`;
+					// const url = `../leaderboard/index.html?juego=${urlParams.get('juego')}&categoria=${category}`;
+
+					const divNewSubcategory = document.createElement("div");
 					divNewSubcategory.classList.add("d-flex", "flex-column");
 
-					let titleNode = document.createElement("span");
+					const titleNode = document.createElement("span");
 					titleNode.innerText = variable.name;
-					titleNode.classList.add("fw-bold","text-start","text-light","ps-1");
+					titleNode.classList.add("text-start", "small","text-light");
 					$(divNewSubcategory).append(titleNode);
 
-					let btnGroupNode = document.createElement("div");
+					const btnGroupNode = document.createElement("div");
 					btnGroupNode.classList.add("btn-group");
 					btnGroupNode.role = "group";
-					$(divNewSubcategory).append(btnGroupNode);
+					// commented, because now we're working with a <select> for subcategories. btnGroupNode is conserved because of legacy
+					// $(divNewSubcategory).append(btnGroupNode);
+
+					// Crear el select dinámicamente
+					const selectGroupNode = document.createElement("select");
+					selectGroupNode.classList.add("form-select", "bg-secondary", "text-light", "border-0");
+					$(divNewSubcategory).append(selectGroupNode);
+					$(divNewSubcategory).change((e) => {
+						redirectTo(url, getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":e.target.value.replace(/ /g, "_").replace(/[%+]/g, "")}));
+					});
 
 					for(let iSubcategoryKey in variable.values.values) {
 						let iSubcategoryLabel = variable.values.values[iSubcategoryKey].label;
-						let iSubcategoryName = variable.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "");
-						let subcategoryNode = document.createElement("button");
+						const iSubcategoryName = variable.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "");
+						const subcategoryNode = document.createElement("button");
 						subcategoryNode.type = "button";
 						subcategoryNode.innerText = iSubcategoryLabel;
 						subcategoryNode.classList.add("btn", "btn-secondary");
-						subcategoryNode.id = `btnSubCa_${numberOfSubcategories}_${i++}`;
+						subcategoryNode.id = `btnSubCa_${numberOfSubcategories}_${i}`;
 						iSubcategoryLabel = iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "");
 						if(urlParams.has('subcategorias')) {
-							let subcategories = urlParams.get('subcategorias').toLowerCase().split(",");
+							const subcategories = urlParams.get('subcategorias').toLowerCase().split(",");
 							subcategories.forEach( subcategory => {
 								subcategory = subcategory.split("@");
 								if(subcategory[0] == iSubcategoryName && subcategory[1] == iSubcategoryLabel.toLowerCase()) {
@@ -217,19 +230,30 @@ async function loadSubcategories(categoryID) {
 							});
 						}
 		
-						let category = leaderboard.category.name.replace(/ /g, "_").replace(/[%+]/g, "");
-						let url = `../leaderboard/?juego=${urlParams.get('juego')}&categoria=${category}`;
-						// let url = `../leaderboard/index.html?juego=${urlParams.get('juego')}&categoria=${category}`;
 						$(subcategoryNode).click((e) => {
 							redirectTo(url, getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "")}));
-						})
+						});
 						btnGroupNode.append(subcategoryNode);
+
+						const option = document.createElement("option");
+						option.textContent = iSubcategoryLabel;
+						option.value = iSubcategoryLabel;
+						// option.classList.add("");
+						selectGroupNode.appendChild(option);
+						if(subcategoryKey === iSubcategoryKey)
+							option.selected = true;
+
+						i++;
 					}
 
+					if(btnGroupNode.offsetWidth > 200) {
+						selectGroupNode.hidden = false;
+						btnGroupNode.hidden = true;
+					}
 					$("#subcategories").append(divNewSubcategory);
 
 					if(subcategoryKey == Object.keys(variable.values.values)[0]) {
-						$(`#btnSubCa_${numberOfSubcategories}_0`)[0].classList.add("active");
+						// $(`#btnSubCa_${numberOfSubcategories}_0`)[0].classList.add("active");
 						subcategoryLabel = variable.values.values[Object.keys(variable.values.values)[0]].label;
 					}
 
@@ -377,7 +401,8 @@ async function insertRunBarsV1(apiURL, top = false) {
 
 				if(leaderboard.variables && variables.length == 0)
 					variables=" ";
-				console.log(leaderboard.variables)
+				if(getEnviroment() === "dev")
+					console.log(leaderboard.variables)
 
 				let newRunBar = new RunBar({
 					hPosition : hPosition++,
