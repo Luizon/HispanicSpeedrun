@@ -7,7 +7,7 @@ navbarNode.innerHTML =
 </span>
 <div class="container-fluid">
   <a class="" href="${LINKS.ñ_index}" style="width: 200px;">
-    <img src="http://localhost:8080/assets/img/banner.png" style="height: 45px; position: absolute; top: 5px; left: 8px;" />
+    <img src="https://espeedruñ.com/assets/img/banner.png" style="height: 45px; position: absolute; top: 5px; left: 8px;" />
   </a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
