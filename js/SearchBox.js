@@ -45,13 +45,11 @@ async function searchText(limit) {
     }
     $(".search-games-container").html("<span class='search-title-label'>Cargando...</span>");
 	let apiURL = `${SPEEDRUN_API_V2}/GetSearch?_r=${encodeSearch64(searchText, limit)}`;
-    if(getEnviroment() == "dev")
-        console.log(apiURL)
+    log(apiURL);
 	await $.get(apiURL)
 		.done(apiAnswer => {
             $(".search-games-container").html("");
-			if(getEnviroment() == "dev")
-				console.log(apiAnswer);
+			log(apiAnswer);
             if((apiAnswer.gameList.length + apiAnswer.userList.length) == 0) {
                 $(".search-games-container").html(
                     "<span class='search-title-label'>No se encontraron coincidencias</span>"
@@ -73,6 +71,7 @@ async function searchText(limit) {
                 let releaseDate = new Date(parseInt(`${game.releaseDate + 36000}000`));
                 new SearchBar({
                     url : `https://espeedruñ.com/leaderboard/?juego=${game.url}`,
+                    // url : `https://espeedruñ.com/leaderboard/index.html?juego=${game.url}`,
                     name : game.name,
                     cover : coverAsset,
                     parentNode: $(".search-games-container")[0],

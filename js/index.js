@@ -1,5 +1,4 @@
 import { GameCard } from "./POO/GameCard.js";
-import { formatTime, getEnviroment } from "./functions.js"
 
 async function loadGameCards() {
 	let apiURL = `${SPEEDRUN_API_V2}/GetLatestLeaderboard`;

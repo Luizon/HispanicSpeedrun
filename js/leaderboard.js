@@ -1,5 +1,5 @@
 import { RunBar } from "./POO/RunBar.js";
-import { formatTime, getEnviroment } from "./functions.js"
+import { formatTime, log } from "./functions.js"
 
 var runnersArray = []; // se usa solo en la funcion "legacy" de createRunBars con API v1
 var hPosition = 1;
@@ -14,6 +14,7 @@ var leaderboard = {
 		ID : null,
 		name : null,
 	},
+	levelId : null,
 	subcategories : [],
 	variables : {},
 	runners : {}
@@ -38,8 +39,7 @@ async function loadCategories(json) {
 	let apiURL = `${SPEEDRUN_API}/games/${json.game}?embed=categories`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
-			if(getEnviroment() == "dev")
-				console.log(apiAnswer);
+			log(apiAnswer);
 			$("html").get(0).style.backgroundImage = `url('${apiAnswer.data.assets["cover-small"].uri.replace("gameasset", "static/game")}')`; // background
 			$(".discord-leaderboard")[0].hidden = false;
 			if($("#divDiscord")[0].href.length == 0) {
@@ -89,17 +89,28 @@ async function loadCategories(json) {
 			$("#categories").html("");
 			let idCounter = 0;
 			apiAnswer.data.categories.data.forEach((iCategory) => {
-				if(iCategory.type == "per-level")
-					return false;
-				categories.push(iCategory);
+				// let url = `../leaderboard/index.html?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
+				let url = `../leaderboard/?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
+				if(!urlParams.get('nivel')) {
+					if(iCategory.type == "per-level") {
+						return false; // only shows full game categories
+					}
+				}
+				if(urlParams.get('nivel')) {
+					if(iCategory.type != "per-level") {
+						if($(`#levelSelect > optgroup > [text = "${urlParams.get('nivel').replace(/ /g, "_").replace(/[%+]/g, "")}"]`)) {
+							return false; // only shows per-level categories
+						}
+					}
+					url+=`&nivel=${urlParams.get('nivel')}`;
+				}
 				let categoryNode = document.createElement("a");
 				categoryNode.innerHTML = iCategory.name;
+				categoryNode.href = `javascript:redirectTo("${url}", getSubcategories());`;
 				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
 				categoryNode.id = "btnCa" + idCounter++;
-				let url = `../leaderboard/?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
-				// let url = `../leaderboard/index.html?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
-				categoryNode.href = `javascript:redirectTo("${url}", getSubcategories());`;
-				if(urlParams.has('categoria'))
+				categories.push(iCategory);
+				if(urlParams.has('categoria')) {
 					if(urlParams.get('categoria').toLowerCase() == iCategory.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "")) {
 						leaderboard.category.name = iCategory.name;
 						leaderboard.category.ID = iCategory.id;
@@ -107,6 +118,7 @@ async function loadCategories(json) {
 						if(iCategory.miscellaneous)
 							btnMiscClickFunction();
 					}
+				}
 				
 				let elmentListNode = document.createElement("li");
 				elmentListNode.appendChild(categoryNode);
@@ -144,6 +156,66 @@ async function loadCategories(json) {
 	});
 }
 
+async function loadLevels(gameID) {
+	const apiURL = `${SPEEDRUN_API}/games/${gameID}/levels`;
+	let levelSelect = document.createElement("select");
+	levelSelect.classList.add("cursor-pointer", "form-select", "bg-secondary", "text-light", "border-0");
+	levelSelect.innerHTML = `<option value="todo">Juego completo</option>`;
+	levelSelect.id = "levelSelect";
+	let optgroup = document.createElement("optgroup");
+	optgroup.label = "-- Niveles individuales --";
+	levelSelect.appendChild(optgroup);
+	
+	await $.get(apiURL)
+		.done(apiAnswer => {
+			if(apiAnswer.data.length === 0) return;
+
+			
+			apiAnswer.data.forEach(level => {
+				let option = document.createElement("option");
+				option.value = level.id;
+				option.textContent = level.name;
+				optgroup.appendChild(option);
+
+				if((urlParams.get('nivel') || '').toLowerCase() == level.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "")) {
+					leaderboard.levelId = level.id;
+					levelSelect.value = level.id;
+				}
+			});
+
+			levelSelect.addEventListener("change", () => {
+				let url = "";
+				if(levelSelect.value == "todo") {
+					url = `../leaderboard/?juego=${urlParams.get('juego')}`;
+					// url = `../leaderboard/index.html?juego=${urlParams.get('juego')}`;
+				}
+				else {
+					const selectedLevel = optgroup.querySelector(`[value='${levelSelect.value}']`)
+					.text.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "");
+					url = `../leaderboard/?juego=${urlParams.get('juego')}&nivel=${selectedLevel}`;
+					// url = `../leaderboard/index.html?juego=${urlParams.get('juego')}&nivel=${selectedLevel}`;
+					if(urlParams.get('categoria'))
+						url += "&categoria=" + urlParams.get('categoria');
+					if(urlParams.get('subcategorias'))
+						url += "&subcategorias=" + urlParams.get('subcategorias');
+					}
+				redirectTo(url);
+			});
+
+			let selectContainer = document.createElement("div");
+			selectContainer.id = "levelSelectorContainer";
+			selectContainer.classList.add("ps-0", "ms-3", "pt-3");
+			selectContainer.appendChild(levelSelect);
+
+			$("#categories").before(selectContainer);
+		})
+		.fail(err => {
+			console.log("Error al cargar los niveles:");
+			console.log(err);
+		});
+}
+
+
 function errorLoadingRuns(message) {
 	$("#loadingLeaderboard").remove();
 	$(".loading-leaderboard-img").remove();
@@ -155,13 +227,11 @@ async function loadSubcategories(categoryID) {
 	await $.get(apiURL)
 		.done(apiAnswer => {
 			let variables = apiAnswer.data
-			// if(getEnviroment() == "dev")
-			// 	console.log(apiAnswer);
+			// log(log(apiAnswer);
 			let hasSubcategories = false;
 			let numberOfSubcategories = 0;
 			variables.forEach(variable => {
-				if(getEnviroment() == "dev")
-					console.log(variable.name);
+				log(variable.name);
 				if(variable.name.toLowerCase().includes("(test)"))
 					return false;
 				let i = 0;
@@ -171,8 +241,7 @@ async function loadSubcategories(categoryID) {
 						if(!["global", "full-game"].includes(variable['scope'].type))
 							return;
 					numberOfSubcategories++;
-					// if(getEnviroment() == "dev")
-					// 	console.log(variable);
+					// log(log(variable);
 					hasSubcategories = true;
 					const newSubcategory = {
 						key : variable.id,
@@ -183,7 +252,12 @@ async function loadSubcategories(categoryID) {
 
 					const category = leaderboard.category.name.replace(/ /g, "_").replace(/[%+]/g, "");
 					const url = `../leaderboard/?juego=${urlParams.get('juego')}&categoria=${category}`;
-					// const url = `../leaderboard/index.html?juego=${urlParams.get('juego')}&categoria=${category}`;
+					// let url = `../leaderboard/index.html?juego=${urlParams.get('juego')}&categoria=${category}`;
+					if(urlParams.get('nivel')) {
+						if($(`#levelSelect > optgroup > [text = "${urlParams.get('nivel').replace(/ /g, "_").replace(/[%+]/g, "")}"]`)) {
+							url+=`&nivel=${urlParams.get('nivel')}`;
+						}
+					}
 
 					const divNewSubcategory = document.createElement("div");
 					divNewSubcategory.classList.add("d-flex", "flex-column");
@@ -201,7 +275,7 @@ async function loadSubcategories(categoryID) {
 
 					// Crear el select dinámicamente
 					const selectGroupNode = document.createElement("select");
-					selectGroupNode.classList.add("form-select", "bg-secondary", "text-light", "border-0");
+					selectGroupNode.classList.add("cursor-pointer", "form-select", "bg-secondary", "text-light", "border-0");
 					$(divNewSubcategory).append(selectGroupNode);
 					$(divNewSubcategory).change((e) => {
 						redirectTo(url, getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":e.target.value.replace(/ /g, "_").replace(/[%+]/g, "")}));
@@ -221,8 +295,7 @@ async function loadSubcategories(categoryID) {
 							subcategories.forEach( subcategory => {
 								subcategory = subcategory.split("@");
 								if(subcategory[0] == iSubcategoryName && subcategory[1] == iSubcategoryLabel.toLowerCase()) {
-									// if(getEnviroment() == "dev")
-									// 	console.log(subcategory)
+									// log(log(subcategory);
 									subcategoryKey = iSubcategoryKey;
 									subcategoryNode.classList.add("active");
 									subcategoryLabel = iSubcategoryLabel;
@@ -300,8 +373,7 @@ async function loadSubcategories(categoryID) {
 				}
 		});
 	
-	if(getEnviroment() == "dev")
-		console.log(leaderboard.variables)
+	log(leaderboard.variables);
 	let variables = "";
 	for(let iVariable in leaderboard.variables) {
 		variables+= `${leaderboard.variables[iVariable].name}, `;
@@ -318,18 +390,18 @@ async function loadSubcategories(categoryID) {
 
 // API v1, carga demasiado lento
 async function createRunBars(json) {
-	// let hPosition = 1;
 	let apiURL = `${SPEEDRUN_API}/leaderboards/${json.game}/category/${json.category}`;
-	apiURL+= "?embed=players"; // info extra para mostrar
+	if (json.level) {
+		apiURL = `${SPEEDRUN_API}/leaderboards/${json.game}/level/${json.level}/${json.category}`;
+	}
+	apiURL+= "?embed=players";
 	if(leaderboard.subcategories.length > 0) { // subcategorias
 		leaderboard.subcategories.forEach( (subcategory) => {
 			apiURL+= `&var-${subcategory.key}=${subcategory.ID}`;
 		});
 	}
-	if(getEnviroment() == "dev")
-		console.log(leaderboard.subcategories)
-	if(getEnviroment() == "dev")
-		console.log(apiURL);
+	log(leaderboard.subcategories);
+	log(apiURL);
 
 	if(urlParams.has("top")) {
 		await insertRunBarsV1(apiURL, urlParams.get("top")); // limite definido por jugador
@@ -345,8 +417,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 		apiURL+= "&top=" + top;
 	await $.get(apiURL)
 		.done( async apiAnswer => {
-			if(getEnviroment() == "dev")
-				console.log(apiAnswer)
+			log(apiAnswer);
 			let runs = apiAnswer.data.runs;
 			let players = apiAnswer.data.players;
 			let basicInfoPlayers = [];
@@ -401,8 +472,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 
 				if(leaderboard.variables && variables.length == 0)
 					variables=" ";
-				if(getEnviroment() === "dev")
-					console.log(leaderboard.variables)
+				log(leaderboard.variables)
 
 				let newRunBar = new RunBar({
 					hPosition : hPosition++,
@@ -445,8 +515,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 			console.log('error al cargar la leaderboard');
 			errorLoadingRuns('Error al cargar la leaderboard, culpa de Luizón.');
 			console.log(err);
-			if(getEnviroment() == "dev")
-				console.log(leaderboard.category.ID)
+			log(leaderboard.category.ID);
 			if(err.responseJSON) {
 				if(err.responseJSON.message) {
 					// alert(err.responseJSON.message);
@@ -516,6 +585,13 @@ window.onload = async function() {
 		});
 	if(salir)
 		return false;
+	await loadLevels(leaderboard.game.ID)
+		.catch( err=> {
+			console.log(err);
+			salir = true;
+		});
+	if(salir)
+		return false;
 	await loadSubcategories( leaderboard.category.ID ) // carga subcategorias
 		.catch( err=> {
 			console.log(err);
@@ -526,7 +602,8 @@ window.onload = async function() {
 
 	await createRunBars({ // carga la leaderboard como tal
 		game : leaderboard.game.ID,
-		category : leaderboard.category.ID
+		category : leaderboard.category.ID,
+		level : leaderboard.levelId,
 	}).catch( err=> {
 		console.log(err);
 		salir = true;
