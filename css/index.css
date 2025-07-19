@@ -420,3 +420,7 @@ div.expand {
     background-color: #c4c4c4a9;
     border-radius: 1em;
 }
+
+.cursor-pointer {
+  cursor: pointer !important;
+}

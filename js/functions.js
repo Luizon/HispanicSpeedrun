@@ -1,6 +1,11 @@
 export function getEnviroment() {
-    //  return "dev";
+    // return "dev";
     return "prod";
+}
+
+export function log(output) {
+    if(getEnviroment() == "dev")
+        console.log(output);
 }
 
 export function formatTime(totalSeconds) {
