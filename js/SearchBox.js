@@ -1,5 +1,5 @@
 import { SearchBar } from "https://espeedruñ.com/js/POO/SearchBar.js";
-import { getEnviroment } from "https://espeedruñ.com/js/functions.js";
+import { log, getEnviroment } from "https://espeedruñ.com/js/functions.js";
 
 export function callSearcherNavListener() { searcherNavListener(10); }
 
