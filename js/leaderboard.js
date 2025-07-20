@@ -251,7 +251,7 @@ async function loadSubcategories(categoryID) {
 					let subcategoryLabel = "";
 
 					const category = leaderboard.category.name.replace(/ /g, "_").replace(/[%+]/g, "");
-					const url = `../leaderboard/?juego=${urlParams.get('juego')}&categoria=${category}`;
+					let url = `../leaderboard/?juego=${urlParams.get('juego')}&categoria=${category}`;
 					// let url = `../leaderboard/index.html?juego=${urlParams.get('juego')}&categoria=${category}`;
 					if(urlParams.get('nivel')) {
 						if($(`#levelSelect > optgroup > [text = "${urlParams.get('nivel').replace(/ /g, "_").replace(/[%+]/g, "")}"]`)) {
