@@ -1,7 +1,7 @@
 import { GameCard } from "./POO/GameCard.js";
 
 async function loadGameCards() {
-	let apiURL = `${SPEEDRUN_API_V2}/GetLatestLeaderboard`;
+	let apiURL = `${SPEEDRUN_API_V2}/GetLatestLeaderboard?_r=e30`;
 	await $.get(apiURL)
 		.done(apiAnswer => {
             $($("#gamesContainer")).html("<h6>Últimos juegos runneados.</h6>");
@@ -26,6 +26,7 @@ window.onload = async function() {
     await loadGameCards()
         .catch( err=> {
             console.log(err);
+            $($("#gamesContainer")).html("<h6>Ocurrió un error al cargar los juegos.</h6>");
         });
 	activateTooltips();
 }

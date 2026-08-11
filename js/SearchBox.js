@@ -44,75 +44,99 @@ async function searchText(limit) {
         return false;
     }
     $(".search-games-container").html("<span class='search-title-label'>Cargando...</span>");
-	let apiURL = `${SPEEDRUN_API_V2}/GetSearch?_r=${encodeSearch64(searchText, limit)}`;
+    let cargoJuegos = false;
+	let apiURL = `${SPEEDRUN_API}/games?name={${searchText}}`;
     log(apiURL);
 	await $.get(apiURL)
 		.done(apiAnswer => {
             $(".search-games-container").html("");
 			log(apiAnswer);
-            if((apiAnswer.gameList.length + apiAnswer.userList.length) == 0) {
-                $(".search-games-container").html(
-                    "<span class='search-title-label'>No se encontraron coincidencias</span>"
-                );
+            if((apiAnswer.data.length) == 0) {
+                let gamesLabel = document.createElement("span");
+                gamesLabel.innerHTML = "No se encontraron juegos que coincidan con la búsqueda";
+                gamesLabel.classList.add("search-title-label");
+                $(".search-games-container").append(gamesLabel);
+                $(".search-games-container").append(document.createElement("br"));
                 return false;
             }
-            if(apiAnswer.gameList.length) {
+            if(apiAnswer.data.length) {
                 let gamesLabel = document.createElement("span")
                 gamesLabel.innerHTML = "Juegos";
                 gamesLabel.classList.add("search-title-label");
                 $(".search-games-container").append(gamesLabel);
             }
-            apiAnswer.gameList.forEach(game => {
-                let coverAsset = `https://speedrun.com${game.coverPath}`; // puede no ser la ruta correcta
-                game.staticAssets.forEach(asset => {
-                    if(asset.assetType == "cover")
-                        coverAsset = `https://speedrun.com${asset.path}`;
-                });
-                let releaseDate = new Date(parseInt(`${game.releaseDate + 36000}000`));
+            apiAnswer.data.forEach(game => {
+                let coverAsset = game["assets"]["cover-tiny"]["uri"]; // puede no ser la ruta correcta
                 new SearchBar({
-                    url : `https://espeedruñ.com/leaderboard/?juego=${game.url}`,
-                    // url : `https://espeedruñ.com/leaderboard/index.html?juego=${game.url}`,
-                    name : game.name,
+                    url : `https://espeedruñ.com/leaderboard/?juego=${game.abbreviation}`,
+                    // url : `https://espeedruñ.com/leaderboard/index.html?juego=${game.abbreviation}`,
+                    name : game.names.international,
                     cover : coverAsset,
                     parentNode: $(".search-games-container")[0],
-                    subText : releaseDate.getFullYear(),
+                    subText : game.released,
                 });
             });
 
-            if(apiAnswer.userList.length) {
-                let gamesLabel = document.createElement("span")
-                gamesLabel.innerHTML = "Usuarios";
-                gamesLabel.classList.add("search-title-label");
-                $(".search-games-container").append(gamesLabel);
+            if(apiAnswer.data.length) {
+                let usersLabel = document.createElement("span")
+                usersLabel.id = "spanUsersLabel";
+                usersLabel.innerHTML = "Cargando usuarios...";
+                usersLabel.classList.add("search-title-label");
+                $(".search-games-container").append(usersLabel);
             }
-            apiAnswer.userList.forEach(user => {
-                let coverAsset = `https://speedrun.com/images/blankcover.png`; // por si no tiene foto de perfil
-                user.staticAssets.forEach(asset => {
-                    if(asset.assetType == "image")
-                        coverAsset = `https://speedrun.com${asset.path}`;
-                });
-                let pronouns = "";
-                if(user.pronouns.length > 0) {
-                    user.pronouns.forEach(pronoun => {
-                        pronouns+= pronoun + ", ";
-                    });
-                    if(pronouns.includes(","))
-                        pronouns = `(${pronouns.substring(0, pronouns.length - 2)})`;
-                }
-                new SearchBar({
-                    url : `https://speedrun.com/user/${user.name}`,
-                    name : user.name,
-                    cover : coverAsset,
-                    parentNode: $(".search-games-container")[0],
-                    subText : pronouns,
-                });
-            });
+
+            cargoJuegos = true;
         })
         .fail(err => {
             console.log(`error al buscar ${searchText}`);
             console.log(err);
             $(".search-title-label").html("Error temporal con speedrun.com.<br>No será posible usar el buscador por ahora.<br><br>Intenta de nuevo más tarde.");
     	});
+
+    if($(".search-title-label").html() == "Error temporal con speedrun.com.<br>No será posible usar el buscador por ahora.<br><br>Intenta de nuevo más tarde.") {
+        return false;
+    }
+
+    apiURL = `${SPEEDRUN_API}/users?name={${searchText}}`;
+    log(apiURL);
+    await $.get(apiURL)
+        .done(apiAnswer => {
+			log(apiAnswer);
+            if((apiAnswer.data.length) == 0) {
+                if(!cargoJuegos) {
+                    $(".search-games-container").html(
+                        "<span class='search-title-label'>No se encontró ninguna coincidencia</span>"
+                    );
+                }
+                else {
+                    let usersLabel = document.getElementById("spanUsersLabel") || document.createElement("span");
+                    usersLabel.innerHTML = "No se encontraron usuarios con ese nombre";
+                    usersLabel.classList.add("search-title-label");
+                    $(".search-games-container").append(usersLabel);
+                }
+                return false;
+            }
+            if(apiAnswer.data.length) {
+                let usersLabel = document.getElementById("spanUsersLabel") || document.createElement("span");
+                usersLabel.innerHTML = "Usuarios";
+                usersLabel.classList.add("search-title-label");
+                $(".search-games-container").append(usersLabel);
+            }
+            apiAnswer.data.forEach(user => {
+                let coverAsset = user["assets"]["image"]["uri"] || defaultPfpCover; // puede no ser la ruta correcta
+                new SearchBar({
+                    url : user.weblink,
+                    name : user.names.international,
+                    cover : coverAsset,
+                    parentNode: $(".search-games-container")[0],
+                    subText : user.released,
+                });
+            });
+        })
+        .fail(err => {
+            console.log(`error al buscar ${searchText}`);
+            console.log(err);
+        });
 }
 
 function encodeSearch64(searchText, limit) {

@@ -55,6 +55,7 @@ var topImg = {
 var objCounter = 0;
 
 // constants
+const defaultPfpCover = "https://espeedruñ.com/assets/img/default_pfp.svg";
 const SPEEDRUN_API = "https://www.speedrun.com/api/v1";
 const SPEEDRUN_API_V2 = "https://www.speedrun.com/api/v2";
 const DEFAULT_LIMIT = 300;
