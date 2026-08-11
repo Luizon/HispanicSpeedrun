@@ -65,7 +65,9 @@ async function searchText(limit) {
                 gamesLabel.classList.add("search-title-label");
                 $(".search-games-container").append(gamesLabel);
             }
+            let counter = 0;
             apiAnswer.data.forEach(game => {
+                if(counter++ >= limit) return false;
                 let coverAsset = game["assets"]["cover-tiny"]["uri"]; // puede no ser la ruta correcta
                 new SearchBar({
                     url : `https://espeedruñ.com/leaderboard/?juego=${game.abbreviation}`,
@@ -122,7 +124,9 @@ async function searchText(limit) {
                 usersLabel.classList.add("search-title-label");
                 $(".search-games-container").append(usersLabel);
             }
+            let counter = 0;
             apiAnswer.data.forEach(user => {
+                if(counter++ >= limit) return false;
                 let coverAsset = user["assets"]["image"]["uri"] || defaultPfpCover; // puede no ser la ruta correcta
                 new SearchBar({
                     url : user.weblink,
@@ -137,13 +141,6 @@ async function searchText(limit) {
             console.log(`error al buscar ${searchText}`);
             console.log(err);
         });
-}
-
-function encodeSearch64(searchText, limit) {
-    let rawJson = `{"query":"${searchText}","limit":${limit},"includeGames":true,"includeNews":false,"includePages":false,"includeSeries":false,"includeUsers":true}`;
-    let output = btoa(rawJson);
-    output = output.replace(/=/g, "");
-    return output;
 }
 
 searcherNavListener();
