@@ -23,6 +23,10 @@ var startedAt = null;
 var finished = false;
 var selectedCountry = "";
 
+function addCountryParam(url) {
+	return selectedCountry ? `${url}&pais=${encodeURIComponent(selectedCountry)}` : url;
+}
+
 function createCountryFilter() {
 	let countrySelect = document.createElement("select");
 	countrySelect.id = "countryFilter";
@@ -56,7 +60,7 @@ function updateCountryFilter(players) {
 			countries.set(player.countryCode, player.country);
 	});
 
-	let currentValue = countrySelect.value;
+	let currentValue = selectedCountry || urlParams.get("pais") || countrySelect.value;
 	countrySelect.innerHTML = `<option value="">Todos los países</option>`;
 	Array.from(countries.entries())
 		.sort((first, second) => first[1].localeCompare(second[1], "es"))
@@ -66,17 +70,27 @@ function updateCountryFilter(players) {
 			option.textContent = countryName;
 			countrySelect.appendChild(option);
 		});
-	countrySelect.value = currentValue;
+	let matchingOption = Array.from(countrySelect.options).find(option =>
+		option.value.toLowerCase() == currentValue.toLowerCase()
+	);
+	selectedCountry = matchingOption ? matchingOption.value : "";
+	countrySelect.value = selectedCountry;
 	countrySelect.disabled = countrySelect.options.length === 1;
 	applyCountryFilter();
 }
 
 function applyCountryFilter() {
+	let visiblePosition = 0;
 	$("#divRunBars > .run-bar").each(function() {
-		if(this.id == "runBarHeader")
+		if(this.id == "runBarHeader" || !this.dataset.countryCodes)
 			return;
 		let countries = (this.dataset.countryCodes || "").split(",");
 		this.hidden = Boolean(selectedCountry) && !countries.includes(selectedCountry);
+		if(!this.hidden) {
+			this.classList.remove("row-odd", "row-even");
+			this.classList.add(visiblePosition % 2 === 0 ? "row-odd" : "row-even");
+			visiblePosition++;
+		}
 	});
 }
 
@@ -166,7 +180,11 @@ async function loadCategories(json) {
 				}
 				let categoryNode = document.createElement("a");
 				categoryNode.innerHTML = iCategory.name;
-				categoryNode.href = `javascript:redirectTo("${url}", getSubcategories());`;
+				categoryNode.href = "#";
+				categoryNode.addEventListener("click", (event) => {
+					event.preventDefault();
+					redirectTo(addCountryParam(url), getSubcategories());
+				});
 				categoryNode.classList.add("btn", "btn-secondary", "me-2", "mb-2");
 				categoryNode.id = "btnCa" + idCounter++;
 				categories.push(iCategory);
@@ -259,6 +277,7 @@ async function loadLevels(gameID) {
 					if(urlParams.get('subcategorias'))
 						url += "&subcategorias=" + urlParams.get('subcategorias');
 					}
+					url = addCountryParam(url);
 				redirectTo(url);
 			});
 
@@ -338,7 +357,7 @@ async function loadSubcategories(categoryID) {
 					selectGroupNode.classList.add("cursor-pointer", "form-select", "bg-secondary", "text-light", "border-0");
 					$(divNewSubcategory).append(selectGroupNode);
 					$(divNewSubcategory).change((e) => {
-						redirectTo(url, getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":e.target.value.replace(/ /g, "_").replace(/[%+]/g, "")}));
+						redirectTo(addCountryParam(url), getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":e.target.value.replace(/ /g, "_").replace(/[%+]/g, "")}));
 					});
 
 					for(let iSubcategoryKey in variable.values.values) {
@@ -364,7 +383,7 @@ async function loadSubcategories(categoryID) {
 						}
 		
 						$(subcategoryNode).click((e) => {
-							redirectTo(url, getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "")}));
+							redirectTo(addCountryParam(url), getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "")}));
 						});
 						btnGroupNode.append(subcategoryNode);
 
@@ -613,6 +632,7 @@ function loadLessInformationMessage() {
 		newParams+= `&top=${urlParams.get("top") / 2}`;
 	else
 		newParams+= `&top=2000`;
+	newParams = addCountryParam(newParams);
 		
 	$("#loadingLeaderboardText").html($("#loadingLeaderboardText").html()
 		+ "<br><br><h6 style='text-align: left;font-weight: normal;'>Prueba recargando la página."
