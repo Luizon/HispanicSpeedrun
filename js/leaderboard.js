@@ -21,6 +21,64 @@ var leaderboard = {
 };
 var startedAt = null;
 var finished = false;
+var selectedCountry = "";
+
+function createCountryFilter() {
+	let countrySelect = document.createElement("select");
+	countrySelect.id = "countryFilter";
+	countrySelect.classList.add("cursor-pointer", "form-select", "bg-secondary", "text-light", "border-0");
+	countrySelect.innerHTML = `<option value="">Todos los países</option>`;
+	countrySelect.disabled = true;
+	countrySelect.addEventListener("change", () => {
+		selectedCountry = countrySelect.value;
+		applyCountryFilter();
+	});
+
+	let selectContainer = document.createElement("div");
+	selectContainer.id = "countryFilterContainer";
+	selectContainer.classList.add("ps-0", "ms-3", "pt-3");
+	selectContainer.appendChild(countrySelect);
+	$("#categories").before(selectContainer);
+}
+
+function updateCountryFilter(players) {
+	let countrySelect = $("#countryFilter")[0];
+	if(!countrySelect)
+		return;
+
+	let countries = new Map();
+	Array.from(countrySelect.options).forEach(option => {
+		if(option.value)
+			countries.set(option.value, option.textContent);
+	});
+	players.forEach(player => {
+		if(player.countryCode && player.country)
+			countries.set(player.countryCode, player.country);
+	});
+
+	let currentValue = countrySelect.value;
+	countrySelect.innerHTML = `<option value="">Todos los países</option>`;
+	Array.from(countries.entries())
+		.sort((first, second) => first[1].localeCompare(second[1], "es"))
+		.forEach(([countryCode, countryName]) => {
+			let option = document.createElement("option");
+			option.value = countryCode;
+			option.textContent = countryName;
+			countrySelect.appendChild(option);
+		});
+	countrySelect.value = currentValue;
+	countrySelect.disabled = countrySelect.options.length === 1;
+	applyCountryFilter();
+}
+
+function applyCountryFilter() {
+	$("#divRunBars > .run-bar").each(function() {
+		if(this.id == "runBarHeader")
+			return;
+		let countries = (this.dataset.countryCodes || "").split(",");
+		this.hidden = Boolean(selectedCountry) && !countries.includes(selectedCountry);
+	});
+}
 
 async function luizonShouldOptimizeThisWebPage() {
 	while(!finished) {
@@ -87,6 +145,8 @@ async function loadCategories(json) {
 			leaderboard.category.name = null;
 			leaderboard.category.ID = null;
 			$("#categories").html("");
+			if(!$("#countryFilter")[0])
+				createCountryFilter();
 			let idCounter = 0;
 			apiAnswer.data.categories.data.forEach((iCategory) => {
 				// let url = `../leaderboard/index.html?juego=${json.game}&categoria=${iCategory.name.replace(/ /g, "_").replace(/[%+]/g, "")}`;
@@ -486,6 +546,11 @@ async function insertRunBarsV1(apiURL, top = false) {
 					subcategory : variables || '',
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				});
+				newRunBar.node.dataset.countryCodes = runners
+					.filter(player => player.countryCode)
+					.map(player => player.countryCode)
+					.join(",");
+				updateCountryFilter(runners);
 				runnersArray.push(newRunBar);
 				if(run.run.comment)
 					activateTooltip($(`#${newRunBar.id} > .run-bar-runner > .row > button`)[0]);
