@@ -505,17 +505,18 @@ async function createRunBars(json) {
 	}
 	log(leaderboard.subcategories);
 	log(apiURL);
+	const renderedRuns = new Set();
 
 	if(urlParams.has("top")) {
-		await insertRunBarsV1(apiURL, urlParams.get("top")); // limite definido por jugador
+		await insertRunBarsV1(apiURL, urlParams.get("top"), renderedRuns); // limite definido por jugador
 	}
 	else {
-		await insertRunBarsV1(apiURL, DEFAULT_LIMIT); // limite por defecto
-		await insertRunBarsV1(apiURL); // carga todo lo que falta
+		await insertRunBarsV1(apiURL, DEFAULT_LIMIT, renderedRuns); // limite por defecto
+		await insertRunBarsV1(apiURL, false, renderedRuns); // carga todo lo que falta
 	}
 }
 
-async function insertRunBarsV1(apiURL, top = false) {
+async function insertRunBarsV1(apiURL, top = false, renderedRuns = new Set()) {
 	if(top)
 		apiURL+= "&top=" + top;
 	await $.get(apiURL)
@@ -548,6 +549,9 @@ async function insertRunBarsV1(apiURL, top = false) {
 					hispanicPlayers.push(player.id);
 			});
 			runs.forEach(async (run, i) => { // ahora se recorren las runs tal como vienen
+				const runKey = run.id || run.run.weblink;
+				if(renderedRuns.has(runKey))
+					return false;
 				let includeThisRun = false;
 				let runners = [];
 				run.run.players.forEach( multiplayerPlayer => {
@@ -565,6 +569,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 				});
 				if(!includeThisRun)
 					return false;
+				renderedRuns.add(runKey);
 
 				let variables = "";
 				for(let iVariable in run.run.values)
