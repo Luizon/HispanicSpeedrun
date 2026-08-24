@@ -16,12 +16,14 @@ var leaderboard = {
 	},
 	levelId : null,
 	subcategories : [],
+	subcategoryVariables : {},
 	variables : {},
 	runners : {}
 };
 var startedAt = null;
 var finished = false;
 var selectedCountry = "";
+const NO_SUBCATEGORY = "sin_filtrar";
 
 function addCountryParam(url) {
 	return selectedCountry ? `${url}&pais=${encodeURIComponent(selectedCountry)}` : url;
@@ -324,10 +326,32 @@ async function loadSubcategories(categoryID) {
 					hasSubcategories = true;
 					const newSubcategory = {
 						key : variable.id,
-						name : variable.name
+						name : variable.name,
+						ID : null,
+						label : "Sin filtrar"
 					}
 					let subcategoryKey = Object.keys(variable.values.values)[0];
-					let subcategoryLabel = "";
+					let subcategoryLabel = variable.values.values[subcategoryKey].label;
+					const iSubcategoryName = variable.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "");
+					if(urlParams.has('subcategorias')) {
+						let requestedSubcategory = urlParams.get('subcategorias').toLowerCase().split(",")
+							.map(subcategory => subcategory.split("@"))
+							.find(subcategory => subcategory[0] == iSubcategoryName);
+						if(requestedSubcategory && requestedSubcategory[1] == NO_SUBCATEGORY) {
+							subcategoryKey = null;
+							subcategoryLabel = "Sin filtrar";
+						}
+						else if(requestedSubcategory) {
+							for(let key in variable.values.values) {
+								let label = variable.values.values[key].label.replace(/ /g, "_").replace(/[%+]/g, "").toLowerCase();
+								if(label == requestedSubcategory[1]) {
+									subcategoryKey = key;
+									subcategoryLabel = variable.values.values[key].label;
+									break;
+								}
+							}
+						}
+					}
 
 					const category = leaderboard.category.name.replace(/ /g, "_").replace(/[%+]/g, "");
 					let url = `../leaderboard/?juego=${urlParams.get('juego')}&categoria=${category}`;
@@ -355,6 +379,11 @@ async function loadSubcategories(categoryID) {
 					// Crear el select dinámicamente
 					const selectGroupNode = document.createElement("select");
 					selectGroupNode.classList.add("cursor-pointer", "form-select", "bg-secondary", "text-light", "border-0");
+					const noSubcategoryOption = document.createElement("option");
+					noSubcategoryOption.textContent = "Sin filtrar";
+					noSubcategoryOption.value = NO_SUBCATEGORY;
+					noSubcategoryOption.selected = true;
+					selectGroupNode.appendChild(noSubcategoryOption);
 					$(divNewSubcategory).append(selectGroupNode);
 					$(divNewSubcategory).change((e) => {
 						redirectTo(addCountryParam(url), getSubcategories({"name":variable.name.replace(/ /g, "_").replace(/[%+]/g, ""), "label":e.target.value.replace(/ /g, "_").replace(/[%+]/g, "")}));
@@ -362,24 +391,14 @@ async function loadSubcategories(categoryID) {
 
 					for(let iSubcategoryKey in variable.values.values) {
 						let iSubcategoryLabel = variable.values.values[iSubcategoryKey].label;
-						const iSubcategoryName = variable.name.toLowerCase().replace(/ /g, "_").replace(/[%+]/g, "");
 						const subcategoryNode = document.createElement("button");
 						subcategoryNode.type = "button";
 						subcategoryNode.innerText = iSubcategoryLabel;
 						subcategoryNode.classList.add("btn", "btn-secondary");
 						subcategoryNode.id = `btnSubCa_${numberOfSubcategories}_${i}`;
 						iSubcategoryLabel = iSubcategoryLabel.replace(/ /g, "_").replace(/[%+]/g, "");
-						if(urlParams.has('subcategorias')) {
-							const subcategories = urlParams.get('subcategorias').toLowerCase().split(",");
-							subcategories.forEach( subcategory => {
-								subcategory = subcategory.split("@");
-								if(subcategory[0] == iSubcategoryName && subcategory[1] == iSubcategoryLabel.toLowerCase()) {
-									// log(log(subcategory);
-									subcategoryKey = iSubcategoryKey;
-									subcategoryNode.classList.add("active");
-									subcategoryLabel = iSubcategoryLabel;
-								}
-							});
+						if(subcategoryKey === iSubcategoryKey) {
+							subcategoryNode.classList.add("active");
 						}
 		
 						$(subcategoryNode).click((e) => {
@@ -392,8 +411,10 @@ async function loadSubcategories(categoryID) {
 						option.value = iSubcategoryLabel;
 						// option.classList.add("");
 						selectGroupNode.appendChild(option);
-						if(subcategoryKey === iSubcategoryKey)
+						if(subcategoryKey === iSubcategoryKey) {
 							option.selected = true;
+							noSubcategoryOption.selected = false;
+						}
 
 						i++;
 					}
@@ -404,17 +425,16 @@ async function loadSubcategories(categoryID) {
 					}
 					$("#subcategories").append(divNewSubcategory);
 
-					if(subcategoryKey == Object.keys(variable.values.values)[0]) {
-						// $(`#btnSubCa_${numberOfSubcategories}_0`)[0].classList.add("active");
-						subcategoryLabel = variable.values.values[Object.keys(variable.values.values)[0]].label;
-					}
-
 					if(subcategoriesString.length > 0)
 						subcategoriesString+= ",";
-					subcategoriesString+= variable.name.replace(/ /g, "_").replace(/[%+]/g, "") + "@" + subcategoryLabel;
+					subcategoriesString+= variable.name.replace(/ /g, "_").replace(/[%+]/g, "") + "@" + (subcategoryKey === null ? NO_SUBCATEGORY : subcategoryLabel);
 
+					leaderboard.subcategoryVariables[variable.id] = {};
+					leaderboard.subcategoryVariables[variable.id].name = variable.name;
+					for(let iSubcategoryKey in variable.values.values)
+						leaderboard.subcategoryVariables[variable.id][iSubcategoryKey] = variable.values.values[iSubcategoryKey].label;
 					newSubcategory.ID = subcategoryKey;
-					newSubcategory.label = variable.values.values[subcategoryKey].label;
+					newSubcategory.label = subcategoryKey === null ? "Sin filtrar" : subcategoryLabel;
 					leaderboard.subcategories.push(newSubcategory);
 				}
 				else {
@@ -462,6 +482,9 @@ async function loadSubcategories(categoryID) {
 
 	new RunBar({
 		subcategory : variables || "",
+		subcategoryValues : leaderboard.subcategories.some(subcategory => subcategory.ID === null)
+			? leaderboard.subcategories.map(subcategory => subcategory.name).join(", ")
+			: "",
 		parentNode: $("#runBarHeader")[0],
 		class_ : `odd run-bar-header`,
 	});
@@ -476,7 +499,8 @@ async function createRunBars(json) {
 	apiURL+= "?embed=players";
 	if(leaderboard.subcategories.length > 0) { // subcategorias
 		leaderboard.subcategories.forEach( (subcategory) => {
-			apiURL+= `&var-${subcategory.key}=${subcategory.ID}`;
+			if(subcategory.ID !== null)
+				apiURL+= `&var-${subcategory.key}=${subcategory.ID}`;
 		});
 	}
 	log(leaderboard.subcategories);
@@ -551,6 +575,15 @@ async function insertRunBarsV1(apiURL, top = false) {
 
 				if(leaderboard.variables && variables.length == 0)
 					variables=" ";
+				let runSubcategories = "";
+				if(leaderboard.subcategories.some(subcategory => subcategory.ID === null)) {
+					leaderboard.subcategories.forEach(subcategory => {
+						let value = run.run.values[subcategory.key];
+						if(value && leaderboard.subcategoryVariables[subcategory.key])
+							runSubcategories+= `${leaderboard.subcategoryVariables[subcategory.key][value]}, `;
+					});
+					runSubcategories = runSubcategories.substring(0, runSubcategories.length - 2);
+				}
 				log(leaderboard.variables)
 
 				let newRunBar = new RunBar({
@@ -563,6 +596,7 @@ async function insertRunBarsV1(apiURL, top = false) {
 					date : run.run.date,
 					parentNode: runsDiv,
 					subcategory : variables || '',
+					subcategoryValues : runSubcategories,
 					class_ : `row-${hPosition % 2 > 0 ? 'odd' : 'even'}`,
 				});
 				newRunBar.node.dataset.countryCodes = runners

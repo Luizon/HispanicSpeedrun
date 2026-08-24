@@ -11,6 +11,7 @@ export class RunBar extends HTML_POJO {
 		this.time = json.time || "error";
 		this.date = json.date || "error";
 		this.subcategory = json.subcategory || "";
+		this.subcategoryValues = json.subcategoryValues || "";
 		if(this.hPosition < 5) {
 			if(topImg[this.hPosition])
 				this.hPosition = this.img({
@@ -71,7 +72,8 @@ export class RunBar extends HTML_POJO {
 			+ this.a({class_ : 'col-auto m-0 p-0', url : this.url, innerHTML :
 				this.div({class_ : "row m-0", innerHTML : 
 					this.div({class_ : 'col run-bar-time', innerHTML : this.time })
-					+ ( this.subcategory ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategory}`}) : "" ) // sin subcategoria no se pondra esta columna
+					+ ( this.subcategory ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategory}`}) : "" )
+					+ ( this.subcategoryValues ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategoryValues}`}) : "" )
 					+ this.div({class_ : 'col run-bar-date d-none d-sm-block d-md-block d-lg-block d-xl-block', innerHTML : this.date })
 			}	)
 			});
@@ -115,7 +117,8 @@ export class RunBar extends HTML_POJO {
 			+ this.div({class_ : 'col run-bar-position', innerHTML : "#" })
 			+ this.div({class_ : 'col run-bar-runner', innerHTML : "Runner" })
 			+ this.div({class_ : 'col run-bar-time', innerHTML : "Tiempo" })
-			+ ( this.subcategory ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategory}`}) : "" ) // sin subcategoria no se pondra esta columna
+			+ ( this.subcategory ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategory}`}) : "" )
+			+ ( this.subcategoryValues ? this.div({class_ : 'col run-bar-date d-none d-sm-none d-md-block d-lg-block d-xl-block', innerHTML : `${this.subcategoryValues}`}) : "" )
 			+ this.div({class_ : 'col run-bar-date d-none d-sm-block d-md-block d-lg-block d-xl-block', innerHTML : "Fecha" });
 	}
 }
