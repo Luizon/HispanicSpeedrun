@@ -15,7 +15,7 @@ navbarNode.innerHTML =
   <div class="collapse navbar-collapse" id="navbarNav">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" href="${LINKS.ñ_index}/acercaDe/acercaDe.html">Acerca de</a>
+      <a class="nav-link" href="${LINKS.ñ_index}/acercaDe/">Acerca de</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="javascript:contactUs()">Contacto</a>
