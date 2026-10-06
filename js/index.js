@@ -26,7 +26,8 @@ window.onload = async function() {
     await loadGameCards()
         .catch( err=> {
             console.log(err);
-            $($("#gamesContainer")).html("<h6>Ocurrió un error al cargar los juegos.</h6>");
+            $($("#gamesContainer")).html(`<h6>Por ahora no es posible mostrar juegos aquí.<br>
+                Usa el buscador de arriba para buscar un juego que quieras revisar.</h6>`);
         });
 	activateTooltips();
 }
