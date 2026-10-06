@@ -15,7 +15,7 @@ navbarNode.innerHTML =
   <div class="collapse navbar-collapse" id="navbarNav">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" href="javascript:about()">Acerca de</a>
+      <a class="nav-link" href="${LINKS.ñ_index}/acercaDe/acercaDe.html">Acerca de</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="javascript:contactUs()">Contacto</a>
@@ -47,17 +47,6 @@ document.querySelector("body").appendChild(divUpperSpace);
 $("#btnSearcherNav").on("click", evt => {
   $("#searcherNav").focus();
 });
-
-function about() {
-  bootbox.dialog({
-    title: "Acerca de",
-    onEscape : true,
-    backdrop: true,
-    message: "Esta página fue creada sin fines de lucro, con el único propósito de documentar acerca de las <b style='color: inherit;'>posiciones mundiales de los speedrunners hispanohablantes</b>."
-      + "<br>Es posible que encuentres jugadores que no sean hispanohablantes en las tablas o que no encuentres speedrunners que conozcas, esto es debido a que <b style='color: inherit;'>se filtra según la bandera del jugador</b>. Si en speedrun.com no tiene colocado un país hispano entonces no se mostrará en las tablas de esta página."
-      + "<br><br>¡ESpeedruÑ.com seguirá mejorando!",
-  });
-}
 
 function contactUs() {
   bootbox.dialog({
